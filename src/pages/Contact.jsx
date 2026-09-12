@@ -52,7 +52,7 @@ export default function Contact() {
               </div>
               
               <h3 className="font-serif text-xl font-bold text-white">
-                Nature Agro Harvest Private Limited
+                Naturagro Harvest Private Limited
               </h3>
               
               <div className="text-xs text-stone-300 space-y-2 leading-relaxed">
@@ -73,10 +73,7 @@ export default function Contact() {
                 Call Us Directly
               </h3>
               <div className="space-y-2.5 text-xs font-bold text-stone-800">
-                <a href="tel:9653129079" className="flex items-center space-x-3 p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-800/10 hover:bg-emerald-100/80 transition-colors">
-                  <span className="p-1.5 bg-[#1B4D3E] text-amber-300 rounded-lg text-xs">📞</span>
-                  <span className="font-mono text-sm text-[#1B4D3E]">+91 9653129079</span>
-                </a>
+
                 <a href="tel:6388239986" className="flex items-center space-x-3 p-2.5 bg-emerald-50/80 rounded-xl border border-emerald-800/10 hover:bg-emerald-100/80 transition-colors">
                   <span className="p-1.5 bg-[#1B4D3E] text-amber-300 rounded-lg text-xs">📞</span>
                   <span className="font-mono text-sm text-[#1B4D3E]">+91 6388239986</span>
@@ -119,7 +116,7 @@ export default function Contact() {
                   Thank You for Contacting Hapsman!
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto">
-                  Your enquiry has been received. Our team at Nature Agro Harvest Pvt. Ltd. will get back to you shortly.
+                  Your enquiry has been received. Our team at Naturagro Harvest Pvt. Ltd. will get back to you shortly.
                 </p>
                 <button
                   onClick={() => {

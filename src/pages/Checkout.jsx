@@ -24,12 +24,43 @@ export default function Checkout() {
 
   const handlePlaceOrder = (e) => {
     e.preventDefault();
-    if (!customer.name || !customer.phone || !customer.address) {
+    if (!customer.name || !customer.phone || !customer.address || !customer.city || !customer.state || !customer.pincode) {
       alert('Please fill out all required shipping fields.');
       return;
     }
 
     const newOrderId = 'HAP-' + Math.floor(100000 + Math.random() * 900000);
+    
+    let message = `*NEW ORDER REQUEST | HAPSMAN*\n`;
+    message += `----------------------------------------\n`;
+    message += `*Order ID:* ${newOrderId}\n\n`;
+
+    message += `*CUSTOMER DETAILS*\n`;
+    message += `- *Name:* ${customer.name}\n`;
+    message += `- *Phone:* ${customer.phone}\n`;
+    message += `- *Address:* ${customer.address}, ${customer.city}, ${customer.state} - ${customer.pincode}\n\n`;
+    
+    message += `*ORDER ITEMS*\n`;
+    cartItems.forEach(item => {
+      message += `> ${item.quantity}x ${item.name} *(₹${item.price * item.quantity})*\n`;
+    });
+    message += `\n----------------------------------------\n`;
+    
+    const methodStr = paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod === 'upi' ? 'UPI Instant' : 'Credit/Debit Card';
+    
+    message += `*BILLING SUMMARY*\n`;
+    message += `- *Subtotal:* ₹${getSubtotal()}\n`;
+    if (getDiscountAmount() > 0) message += `- *Discount:* -₹${getDiscountAmount()}\n`;
+    message += `- *Shipping:* ${getShippingFee() === 0 ? 'FREE' : '₹' + getShippingFee()}\n`;
+    message += `- *Payment Method:* ${methodStr}\n`;
+    message += `----------------------------------------\n`;
+    message += `*TOTAL PAYABLE: ₹${getTotal()}*\n`;
+    message += `----------------------------------------\n\n`;
+    message += `_Please confirm my order and share the next steps!_`;
+
+    const whatsappUrl = `https://wa.me/916388239986?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+
     setOrderId(newOrderId);
     setIsOrderPlaced(true);
     clearCart();
@@ -45,15 +76,15 @@ export default function Checkout() {
             </div>
             
             <h2 className="font-serif text-3xl font-extrabold text-stone-900">
-              Order Confirmed!
+              Order Request Received!
             </h2>
 
             <div className="bg-stone-50 p-4 rounded-xl text-xs font-mono text-stone-700">
-              Order ID: <strong className="text-[#1B4D3E]">{orderId}</strong>
+              Request ID: <strong className="text-[#1B4D3E]">{orderId}</strong>
             </div>
 
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              Thank you for ordering from <strong>HAPSMAN</strong>. Your order is being packed at Nature Agro Harvest Pvt. Ltd., Amethi. An order tracking confirmation has been sent to your email.
+              Thank you for choosing <strong>HAPSMAN</strong>! We have successfully received your order request. Our contact person will connect with you very soon. Order confirmation and further steps will be communicated to your provided contact number and email address.
             </p>
 
             <button

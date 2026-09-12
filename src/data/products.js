@@ -21,8 +21,8 @@ export const products = [
     benefits: ['100% Roasted, Not Fried', 'Zero Trans Fat', 'Rich in Dietary Fiber', 'Gluten Free'],
     nutrition: { calories: '410 kcal', protein: '7.5g', carbs: '68g', fats: '12g', fiber: '6.2g' },
     storage: 'Store in a cool, dry place. Reseal pouch after opening to retain crispness.',
-    image: '/images/kurkuri-makki-snacks.jpg',
-    gallery: ['/images/kurkuri-makki-snacks.jpg', '/images/hero-banner.jpg']
+    image: '/images/makki.png',
+    gallery: ['/images/makki.png', '/images/hero-banner.jpg']
   },
   {
     id: 'millet-2',
@@ -45,8 +45,8 @@ export const products = [
     benefits: ['High Calcium & Iron', 'Low Glycemic Index', 'Kid Friendly', 'No Artificial Flavors'],
     nutrition: { calories: '385 kcal', protein: '8.2g', carbs: '65g', fats: '9.5g', fiber: '8.0g' },
     storage: 'Keep away from direct sunlight. Consume within 30 days of opening.',
-    image: '/images/ragi-munch-puffs.jpg',
-    gallery: ['/images/ragi-munch-puffs.jpg', '/images/hero-banner.jpg']
+    image: '/images/raagimunch.png',
+    gallery: ['/images/raagimunch.png', '/images/hero-banner.jpg']
   },
   {
     id: 'millet-3',
@@ -69,8 +69,8 @@ export const products = [
     benefits: ['Rich in Antioxidants', 'Heart Healthy', 'Zero Cholesterol', 'Light & Airy Crunch'],
     nutrition: { calories: '390 kcal', protein: '7.8g', carbs: '67g', fats: '10g', fiber: '7.1g' },
     storage: 'Store airtight in cool dry pantry.',
-    image: '/images/beetroot-jowar-puffs.jpg',
-    gallery: ['/images/beetroot-jowar-puffs.jpg', '/images/hero-banner.jpg']
+    image: '/images/beetrootjwar.png',
+    gallery: ['/images/beetrootjwar.png', '/images/hero-banner.jpg']
   },
 
   // --- MAKHANA SNACKS ---
@@ -95,8 +95,8 @@ export const products = [
     benefits: ['Low Calorie Gourmet Snack', 'High Protein & Fiber', 'Anti-Aging Antioxidants', 'No Preservatives'],
     nutrition: { calories: '420 kcal', protein: '9.8g', carbs: '62g', fats: '14g', fiber: '11g' },
     storage: 'Store in cool place. Seal tightly after each use.',
-    image: '/images/makhana-tangy-tomato.jpg',
-    gallery: ['/images/makhana-tangy-tomato.jpg', '/images/makhana-collection.jpg']
+    image: '/images/tangu tomato.png',
+    gallery: ['/images/tangu tomato.png']
   },
   {
     id: 'makhana-2',
@@ -119,8 +119,8 @@ export const products = [
     benefits: ['Metabolism Boosting Spices', 'Zero Palm Oil', 'Rich Mineral Profile', 'Guilt-Free Munching'],
     nutrition: { calories: '430 kcal', protein: '9.5g', carbs: '60g', fats: '15g', fiber: '10.5g' },
     storage: 'Store in airtight condition.',
-    image: '/images/makhana-peri-peri.jpg',
-    gallery: ['/images/makhana-peri-peri.jpg', '/images/makhana-collection.jpg']
+    image: '/images/periperi.png',
+    gallery: ['/images/periperi.png']
   },
   {
     id: 'makhana-3',
@@ -143,8 +143,8 @@ export const products = [
     benefits: ['Digestive Cooling Properties', 'High Magnesium', 'Gluten Free'],
     nutrition: { calories: '415 kcal', protein: '9.2g', carbs: '63g', fats: '13.5g', fiber: '11g' },
     storage: 'Store away from humidity.',
-    image: '/images/makhana-pudina-mint.jpg',
-    gallery: ['/images/makhana-pudina-mint.jpg', '/images/makhana-collection.jpg']
+    image: '/images/pudinamint.png',
+    gallery: ['/images/pudinamint.png']
   },
   {
     id: 'makhana-4',
@@ -167,8 +167,8 @@ export const products = [
     benefits: ['Real Cheese Goodness', 'Protein Packed', 'Great Party Snack'],
     nutrition: { calories: '445 kcal', protein: '10.2g', carbs: '59g', fats: '16g', fiber: '9.8g' },
     storage: 'Keep sealed tightly in cool place.',
-    image: '/images/makhana-mac-cheese.jpg',
-    gallery: ['/images/makhana-mac-cheese.jpg', '/images/makhana-collection.jpg']
+    image: '/images/macandcheese.png',
+    gallery: ['/images/macandcheese.png']
   },
   {
     id: 'makhana-5',
@@ -191,8 +191,8 @@ export const products = [
     benefits: ['Smooth Savory Taste', 'High Potassium', 'Non-GMO Ingredients'],
     nutrition: { calories: '435 kcal', protein: '9.6g', carbs: '61g', fats: '15.2g', fiber: '10g' },
     storage: 'Store in a dry location.',
-    image: '/images/makhana-cream-onion.jpg',
-    gallery: ['/images/makhana-cream-onion.jpg', '/images/makhana-collection.jpg']
+    image: '/images/onion.png',
+    gallery: ['/images/onion.png']
   },
 
   // --- BISCUITS ---
@@ -217,8 +217,8 @@ export const products = [
     benefits: ['No Maida (Zero Refined Flour)', 'No Palm Oil', 'Rich in Calcium', 'Slow Baked Delicacy'],
     nutrition: { calories: '460 kcal', protein: '8.8g', carbs: '64g', fats: '18g', fiber: '5.5g' },
     storage: 'Store in airtight jar after opening.',
-    image: '/images/makhana-biscuit.jpg',
-    gallery: ['/images/makhana-biscuit.jpg', '/images/hero-banner.jpg']
+    image: '/images/biscuits.png',
+    gallery: ['/images/biscuits.png', '/images/hero-banner.jpg']
   },
 
   // --- SWEETS ---
@@ -243,8 +243,8 @@ export const products = [
     benefits: ['100% Pure Cashews', 'No Artificial Colors', 'Traditional Recipe', 'Festive Packaging'],
     nutrition: { calories: '490 kcal', protein: '11.5g', carbs: '54g', fats: '25g', fiber: '2.8g' },
     storage: 'Best consumed within 15 days. Refrigerate for longer shelf life.',
-    image: '/images/kaju-katli.jpg',
-    gallery: ['/images/kaju-katli.jpg', '/images/hero-banner.jpg']
+    image: '/images/kajukatli.png',
+    gallery: ['/images/kajukatli.png', '/images/hero-banner.jpg']
   },
   {
     id: 'sweet-2',
@@ -267,8 +267,8 @@ export const products = [
     benefits: ['Rich in Calcium', 'Energy Dense', 'Authentic Heritage Taste'],
     nutrition: { calories: '475 kcal', protein: '9.2g', carbs: '56g', fats: '22g', fiber: '3.1g' },
     storage: 'Keep refrigerated.',
-    image: '/images/dooda-barfi.jpg',
-    gallery: ['/images/dooda-barfi.jpg', '/images/hero-banner.jpg']
+    image: '/images/doda.png',
+    gallery: ['/images/doda.png', '/images/hero-banner.jpg']
   },
   {
     id: 'sweet-3',
@@ -291,8 +291,8 @@ export const products = [
     benefits: ['Refined Sugar Free', 'High Fiber Content', 'Post-Workout Energy'],
     nutrition: { calories: '440 kcal', protein: '7.2g', carbs: '60g', fats: '18g', fiber: '6.5g' },
     storage: 'Store in airtight box at room temperature.',
-    image: '/images/jowar-laddu.jpg',
-    gallery: ['/images/jowar-laddu.jpg', '/images/hero-banner.jpg']
+    image: '/images/jwarladdu.png',
+    gallery: ['/images/jwarladdu.png', '/images/hero-banner.jpg']
   },
   {
     id: 'sweet-4',
@@ -315,8 +315,8 @@ export const products = [
     benefits: ['Zero Added Sugar', 'Instant Clean Energy', 'High Fiber & Omega-3'],
     nutrition: { calories: '390 kcal', protein: '10.5g', carbs: '52g', fats: '15g', fiber: '9.2g' },
     storage: 'Store in cool dry container.',
-    image: '/images/energy-bites.jpg',
-    gallery: ['/images/energy-bites.jpg', '/images/hero-banner.jpg']
+    image: '/images/energynites.png',
+    gallery: ['/images/energynites.png', '/images/hero-banner.jpg']
   },
   {
     id: 'sweet-5',
@@ -339,8 +339,8 @@ export const products = [
     benefits: ['Melt in Mouth Texture', 'Authentic Recipe'],
     nutrition: { calories: '450 kcal', protein: '10g', carbs: '55g', fats: '20g', fiber: '1.2g' },
     storage: 'Keep refrigerated.',
-    image: '/images/peda.jpg',
-    gallery: ['/images/peda.jpg', '/images/hero-banner.jpg']
+    image: '/images/peda.png',
+    gallery: ['/images/peda.png', '/images/hero-banner.jpg']
   },
   {
     id: 'sweet-6',
@@ -363,8 +363,8 @@ export const products = [
     benefits: ['High Protein Sweet', 'Rich Traditional Texture'],
     nutrition: { calories: '480 kcal', protein: '11g', carbs: '50g', fats: '24g', fiber: '0.8g' },
     storage: 'Refrigerate after opening.',
-    image: '/images/milk-cake.jpg',
-    gallery: ['/images/milk-cake.jpg', '/images/hero-banner.jpg']
+    image: '/images/milkcake.png',
+    gallery: ['/images/milkcake.png', '/images/hero-banner.jpg']
   },
 
   // --- DRY FRUITS ---
@@ -389,8 +389,8 @@ export const products = [
     benefits: ['Heart-Healthy Fats', 'Rich in Magnesium & Zinc', 'Crunchy Texture'],
     nutrition: { calories: '553 kcal', protein: '18g', carbs: '30g', fats: '44g', fiber: '3.3g' },
     storage: 'Store airtight in refrigerator.',
-    image: '/images/premium-kaju.jpg',
-    gallery: ['/images/premium-kaju.jpg', '/images/hero-banner.jpg']
+    image: '/images/kaju.png',
+    gallery: ['/images/kaju.png', '/images/hero-banner.jpg']
   },
   {
     id: 'dry-2',
@@ -413,8 +413,8 @@ export const products = [
     benefits: ['Boosts Memory', 'High Vitamin E & Fiber', 'Low Cholesterol'],
     nutrition: { calories: '579 kcal', protein: '21g', carbs: '22g', fats: '49g', fiber: '12g' },
     storage: 'Keep in cool dry place.',
-    image: '/images/california-badam.jpg',
-    gallery: ['/images/california-badam.jpg', '/images/hero-banner.jpg']
+    image: '/images/badam.png',
+    gallery: ['/images/badam.png', '/images/hero-banner.jpg']
   },
   {
     id: 'dry-3',
@@ -437,8 +437,8 @@ export const products = [
     benefits: ['Eye Health Carotenoids', 'High Protein Snack'],
     nutrition: { calories: '562 kcal', protein: '20g', carbs: '27g', fats: '45g', fiber: '10g' },
     storage: 'Store in sealed glass jar.',
-    image: '/images/a-grade-pista.jpg',
-    gallery: ['/images/a-grade-pista.jpg', '/images/hero-banner.jpg']
+    image: '/images/pista.png',
+    gallery: ['/images/pista.png', '/images/hero-banner.jpg']
   },
   {
     id: 'dry-4',
@@ -461,8 +461,8 @@ export const products = [
     benefits: ['Natural Sweetener', 'Instant Energy', 'High Iron Content'],
     nutrition: { calories: '277 kcal', protein: '1.8g', carbs: '75g', fats: '0.2g', fiber: '6.7g' },
     storage: 'Refrigerate for soft juicy texture.',
-    image: '/images/royal-khajoor.jpg',
-    gallery: ['/images/royal-khajoor.jpg', '/images/hero-banner.jpg']
+    image: '/images/khajoor.png',
+    gallery: ['/images/khajoor.png', '/images/hero-banner.jpg']
   },
 
   // --- GIFT HAMPERS ---

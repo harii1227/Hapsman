@@ -37,7 +37,7 @@ export default function About() {
                 AUTHENTIC INDIAN HERITAGE
               </span>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold">
-                Nature Agro Harvest Private Limited
+                Naturagro Harvest Private Limited
               </h2>
               <p className="text-xs sm:text-sm text-stone-300 max-w-xl">
                 Manufactured with love and strict hygiene standards in Gauriganj, Amethi, Uttar Pradesh, India.
@@ -99,7 +99,7 @@ export default function About() {
               <span>Manufacturing & Operations Headquarters</span>
             </div>
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">
-              Nature Agro Harvest Private Limited
+              Naturagro Harvest Private Limited
             </h3>
             <p className="text-xs sm:text-sm text-stone-300 max-w-xl">
               Gauriganj, Amethi, Uttar Pradesh, India.

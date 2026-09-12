@@ -71,7 +71,7 @@ export default function Chatbot() {
       return {
         type: 'contact_numbers',
         text: 'You can connect directly with our Hapsman customer support team at any of the following phone numbers:',
-        numbers: ['9653129079', '6388239986', '6393919546'],
+        numbers: ['6388239986', '6393919546'],
       };
     }
 
@@ -98,7 +98,7 @@ export default function Chatbot() {
       return {
         type: 'contact_numbers',
         text: '🎁 We offer gold-embossed luxury rigid gift boxes with custom branding for corporate events & festive gifting. Call our bulk order desk directly at:',
-        numbers: ['9653129079', '6388239986', '6393919546'],
+        numbers: ['6388239986', '6393919546'],
       };
     }
 
@@ -132,7 +132,7 @@ export default function Chatbot() {
     return {
       type: 'contact_numbers',
       text: 'Thank you for reaching out to Hapsman! For instant help or order assistance, please connect with our team directly at:',
-      numbers: ['9653129079', '6388239986', '6393919546'],
+      numbers: ['6388239986', '6393919546'],
     };
   };
 

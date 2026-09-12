@@ -35,11 +35,11 @@ function PolicyHelpBox() {
 
         <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
           <a
-            href="tel:9653129079"
+            href="tel:6388239986"
             className="px-5 py-3 bg-amber-400 text-stone-950 rounded-xl text-xs font-black hover:bg-amber-300 transition-colors shadow-md flex items-center space-x-2"
           >
             <PhoneCall className="w-4 h-4" />
-            <span>Call +91 9653129079</span>
+            <span>Call +91 6388239986</span>
           </a>
           <Link
             to="/contact"
@@ -251,7 +251,7 @@ export function RefundPolicy() {
               <p>Follow these 3 simple steps within <strong>48 hours</strong> of order delivery:</p>
               <ol className="list-decimal list-inside space-y-1.5 text-stone-700 font-medium pl-2">
                 <li>Take a clear unboxing photo or video showing the shipping label and damaged item.</li>
-                <li>WhatsApp us at <strong>+91 9653129079</strong> or email <strong>support@hapsman.com</strong> with your Order ID.</li>
+                <li>WhatsApp us at <strong>+91 6388239986</strong> or email <strong>support@hapsman.com</strong> with your Order ID.</li>
                 <li>Our team will inspect the proof and dispatch a fresh replacement packet immediately.</li>
               </ol>
             </div>
@@ -293,7 +293,7 @@ export function PrivacyPolicy() {
               Privacy Policy
             </h1>
             <p className="text-xs sm:text-sm text-stone-300 max-w-xl leading-relaxed">
-              Hapsman (operated by Nature Agro Harvest Private Limited) is committed to keeping your personal data secure, confidential, and protected.
+              Hapsman (operated by Naturagro Harvest Private Limited) is committed to keeping your personal data secure, confidential, and protected.
             </p>
           </div>
         </div>
@@ -360,7 +360,7 @@ export function PrivacyPolicy() {
               <span>Company Information</span>
             </h2>
             <div className="pl-9 text-xs sm:text-sm text-stone-700 bg-stone-50 p-4 rounded-xl border border-stone-200/80 space-y-1">
-              <div className="font-bold text-stone-900">Nature Agro Harvest Private Limited</div>
+              <div className="font-bold text-stone-900">Naturagro Harvest Private Limited</div>
               <div>Gauriganj, Amethi, Uttar Pradesh, India.</div>
               <div>IT & Web Partner: <strong>ARH Consultancy Private Limited</strong></div>
             </div>
@@ -392,7 +392,7 @@ export function Terms() {
               Terms & Conditions
             </h1>
             <p className="text-xs sm:text-sm text-stone-300 max-w-xl leading-relaxed">
-              By accessing, browsing, or purchasing from Hapsman, you agree to comply with the terms set forth by Nature Agro Harvest Private Limited.
+              By accessing, browsing, or purchasing from Hapsman, you agree to comply with the terms set forth by Naturagro Harvest Private Limited.
             </p>
           </div>
         </div>
@@ -416,7 +416,7 @@ export function Terms() {
               <span>Pricing & Offers</span>
             </h2>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed pl-9">
-              Prices displayed are inclusive of GST. Nature Agro Harvest Pvt. Ltd. reserves the right to modify prices, launch festive discount offers, and update hamper combinations based on crop harvest availability.
+              Prices displayed are inclusive of GST. Naturagro Harvest Pvt. Ltd. reserves the right to modify prices, launch festive discount offers, and update hamper combinations based on crop harvest availability.
             </p>
           </div>
 
@@ -426,7 +426,7 @@ export function Terms() {
               <span>Intellectual Property & Website Credits</span>
             </h2>
             <div className="pl-9 space-y-2 text-xs sm:text-sm text-stone-600">
-              <p>The brand name HAPSMAN, logo design, packaging graphics, and website content are intellectual properties of <strong>Nature Agro Harvest Private Limited</strong>.</p>
+              <p>The brand name HAPSMAN, logo design, packaging graphics, and website content are intellectual properties of <strong>Naturagro Harvest Private Limited</strong>.</p>
               <p className="text-stone-700 font-semibold bg-emerald-50 p-3.5 rounded-xl border border-emerald-800/10">
                 Website Development & IT Infrastructure designed and managed by <strong>ARH Consultancy Private Limited</strong>.
               </p>

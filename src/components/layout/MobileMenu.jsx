@@ -77,7 +77,7 @@ export default function MobileMenu({ isOpen, onClose }) {
             <span>Corporate Gifting</span>
           </Link>
           <div className="text-xs text-center text-stone-500 font-medium">
-            Nature Agro Harvest Pvt. Ltd.
+            Naturagro Harvest Pvt. Ltd.
           </div>
         </div>
       </div>

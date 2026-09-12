@@ -3,7 +3,7 @@ import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const announcementMessages = [
   "🌿 Healthy Snacking. Naturally Delicious by HAPSMAN.",
-  "📞 Support Helplines: +91 9653129079 | +91 6388239986 | +91 6393919546",
+  "📞 Support Helplines: +91 6388239986 | +91 6393919546",
   "✨ Premium Natural Snacks, Sweets & Dry Fruits",
   "🎁 Special Festive Offers & Customized Corporate Hampers",
   "🚚 Free Express Shipping across India on Orders Above ₹499"
