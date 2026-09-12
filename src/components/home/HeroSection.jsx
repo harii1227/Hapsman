@@ -85,11 +85,11 @@ export default function HeroSection() {
       </div>
 
       {/* Right 50% Half: Balanced Height Image (Slightly fine-tuned position) */}
-      <div className="w-full lg:w-1/2 relative min-h-[350px] sm:min-h-[420px] lg:min-h-[600px] lg:max-h-[650px] bg-[#FAF7F2] flex items-center justify-center overflow-hidden">
+      <div className="w-full lg:w-1/2 relative h-[320px] sm:min-h-[420px] lg:min-h-[600px] lg:max-h-[650px] bg-[#FAF7F2] flex items-center justify-center overflow-hidden">
         <img
           src="/images/hero1.png"
           alt="HAPSMAN Full Product Range Showcase"
-          className="w-full h-full object-cover object-[center_75%] rounded-none max-h-[650px]"
+          className="w-full h-full object-cover object-bottom sm:object-[center_75%] rounded-none max-h-[650px]"
         />
       </div>
 

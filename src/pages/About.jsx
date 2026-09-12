@@ -29,7 +29,7 @@ export default function About() {
           <img
             src="/images/hero-banner.jpg"
             alt="Hapsman Heritage & Food Craftsmanship"
-            className="w-full h-80 sm:h-96 object-cover opacity-90"
+            className="w-full h-[500px] sm:h-[650px] lg:h-[800px] object-cover opacity-90"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-6 sm:p-10">
             <div className="text-white space-y-2">
