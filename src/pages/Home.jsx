@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Flame, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import HeroSection from '../components/home/HeroSection';
 import CategoryCard from '../components/products/CategoryCard';
+import AutoScrollCarousel from '../components/common/AutoScrollCarousel';
 import ProductCard from '../components/products/ProductCard';
 import WhyChooseHapsman from '../components/home/WhyChooseHapsman';
 import GiftHamperCard from '../components/gifting/GiftHamperCard';
@@ -140,11 +141,13 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <AutoScrollCarousel className="sm:grid-cols-2 lg:grid-cols-4">
             {bestSellers.map((product) => (
-              <ProductCard key={product.id} product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              <div key={product.id} className="w-[85vw] max-w-[280px] shrink-0 sm:w-auto sm:shrink snap-center sm:snap-align-none">
+                <ProductCard product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              </div>
             ))}
-          </div>
+          </AutoScrollCarousel>
         </div>
       </section>
 
@@ -175,11 +178,13 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <AutoScrollCarousel className="sm:grid-cols-2 lg:grid-cols-4">
             {makhanaProducts.map((product) => (
-              <ProductCard key={product.id} product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              <div key={product.id} className="w-[85vw] max-w-[280px] shrink-0 sm:w-auto sm:shrink snap-center sm:snap-align-none">
+                <ProductCard product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              </div>
             ))}
-          </div>
+          </AutoScrollCarousel>
         </div>
       </section>
 
@@ -239,11 +244,13 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <AutoScrollCarousel className="sm:grid-cols-2 lg:grid-cols-4">
             {sweetsProducts.map((product) => (
-              <ProductCard key={product.id} product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              <div key={product.id} className="w-[85vw] max-w-[280px] shrink-0 sm:w-auto sm:shrink snap-center sm:snap-align-none">
+                <ProductCard product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              </div>
             ))}
-          </div>
+          </AutoScrollCarousel>
         </div>
       </section>
 
@@ -371,11 +378,13 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <AutoScrollCarousel className="sm:grid-cols-2 lg:grid-cols-4">
             {dryFruitsProducts.map((product) => (
-              <ProductCard key={product.id} product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              <div key={product.id} className="w-[85vw] max-w-[280px] shrink-0 sm:w-auto sm:shrink snap-center sm:snap-align-none">
+                <ProductCard product={product} onQuickView={(p) => setQuickViewProduct(p)} />
+              </div>
             ))}
-          </div>
+          </AutoScrollCarousel>
         </div>
       </section>
 

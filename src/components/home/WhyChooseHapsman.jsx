@@ -1,7 +1,21 @@
-import React from 'react';
-import { Wheat, ShieldCheck, Heart, Gift, Sparkles, Flame } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Wheat, ShieldCheck, Heart, Gift, Sparkles, Flame, ChevronRight, ChevronLeft } from 'lucide-react';
 
 export default function WhyChooseHapsman() {
+  const scrollRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -280, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 280, behavior: 'smooth' });
+    }
+  };
+
   const points = [
     {
       icon: Wheat,
@@ -36,11 +50,11 @@ export default function WhyChooseHapsman() {
   ];
 
   return (
-    <section className="py-16 sm:py-20 bg-white border-b border-stone-200/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 sm:py-20 bg-white border-b border-stone-200/60 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
+        <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-800/10">
             THE HAPSMAN DIFFERENCE
           </span>
@@ -52,27 +66,48 @@ export default function WhyChooseHapsman() {
           </p>
         </div>
 
-        {/* 6 Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {points.map((pt, idx) => {
-            const Icon = pt.icon;
-            return (
-              <div
-                key={idx}
-                className="bg-[#FAF7F2] p-6 sm:p-7 rounded-2xl border border-stone-200/80 hover:border-[#1B4D3E]/40 hover:shadow-md transition-all duration-300 group"
-              >
-                <div className="w-12 h-12 bg-[#1B4D3E] text-amber-200 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-xs">
-                  <Icon className="w-6 h-6" />
+        {/* 6 Cards Grid / Carousel */}
+        <div className="relative group">
+          
+          <button 
+            onClick={scrollLeft}
+            className="md:hidden absolute left-0 top-1/2 -translate-y-1/2 z-10 -ml-3 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-stone-200 p-2 rounded-full text-stone-700 hover:text-[#1B4D3E] active:scale-95 transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          <div 
+            ref={scrollRef}
+            className="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-1 py-4"
+          >
+            {points.map((pt, idx) => {
+              const Icon = pt.icon;
+              return (
+                <div
+                  key={idx}
+                  className="w-[85vw] max-w-[320px] shrink-0 md:w-auto md:shrink snap-center md:snap-align-none bg-[#FAF7F2] p-6 sm:p-7 rounded-2xl border border-stone-200/80 hover:border-[#1B4D3E]/40 hover:shadow-lg transition-all duration-300 group"
+                >
+                  <div className="w-12 h-12 bg-[#1B4D3E] text-amber-200 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-xs">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-serif text-lg font-bold text-stone-900 group-hover:text-[#1B4D3E] transition-colors mb-2">
+                    {pt.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                    {pt.desc}
+                  </p>
                 </div>
-                <h3 className="font-serif text-lg font-bold text-stone-900 group-hover:text-[#1B4D3E] transition-colors mb-2">
-                  {pt.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-                  {pt.desc}
-                </p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          <button 
+            onClick={scrollRight}
+            className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-10 -mr-3 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-stone-200 p-2 rounded-full text-stone-700 hover:text-[#1B4D3E] active:scale-95 transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+          
         </div>
 
       </div>
