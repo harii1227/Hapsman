@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, Menu, User, Gift, Sparkles, ChevronDown } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useSearch } from '../../context/SearchContext';
+import { useAuth } from '../../context/AuthContext';
 import MobileMenu from './MobileMenu';
 
 export default function Header() {
@@ -12,6 +13,7 @@ export default function Header() {
 
   const { getCartCount, setIsCartOpen } = useCart();
   const { openSearch } = useSearch();
+  const { user } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -169,13 +171,27 @@ export default function Header() {
               <Search className="w-5 h-5" />
             </button>
 
-            <Link
-              to="/contact"
-              aria-label="Account details"
-              className="p-2 text-stone-700 hover:text-[#1B4D3E] hover:bg-stone-100 rounded-full transition-colors hidden sm:block"
-            >
-              <User className="w-5 h-5" />
-            </Link>
+            {user ? (
+              <Link
+                to="/profile"
+                className="hidden sm:flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-stone-700 hover:text-[#1B4D3E] hover:bg-stone-100 rounded-full transition-colors"
+              >
+                <div className="w-6 h-6 rounded-full bg-[#1B4D3E] text-white flex items-center justify-center text-xs font-bold">
+                  {user.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <span className="max-w-[100px] truncate">
+                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                </span>
+              </Link>
+            ) : (
+              <Link
+                to="/profile"
+                aria-label="Account details"
+                className="p-2 text-stone-700 hover:text-[#1B4D3E] hover:bg-stone-100 rounded-full transition-colors hidden sm:block"
+              >
+                <User className="w-5 h-5" />
+              </Link>
+            )}
 
             <button
               onClick={() => setIsCartOpen(true)}

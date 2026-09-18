@@ -17,10 +17,18 @@ import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import { PrivacyPolicy, Terms, ShippingPolicy, RefundPolicy } from './pages/PolicyPages';
+import Login from './pages/Login';
 
 import { CartProvider } from './context/CartContext';
 import { SearchProvider } from './context/SearchContext';
+import { AuthProvider } from './context/AuthContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import ProtectedRoute from './components/common/ProtectedRoute';
+
+import ProfileLayout from './components/profile/ProfileLayout';
+import MyProfile from './pages/profile/MyProfile';
+import OrderHistory from './pages/profile/OrderHistory';
+import OrderDetails from './pages/profile/OrderDetails';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -30,66 +38,101 @@ function ScrollToTop() {
   return null;
 }
 
+function AppLayout() {
+  const { pathname } = useLocation();
+  const isLoginPage = pathname === '/login';
+
+  return (
+    <div className="flex flex-col min-h-screen bg-[#FAF7F2] text-stone-900 font-sans selection:bg-[#1B4D3E] selection:text-amber-200">
+      
+      {!isLoginPage && (
+        <>
+          {/* 1. Top Announcement Bar */}
+          <AnnouncementBar />
+
+          {/* 2. Glassmorphic Sticky Header */}
+          <Header />
+        </>
+      )}
+
+      {/* Main Page Content */}
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          
+          {/* Product listing & category routes */}
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:categorySlug" element={<Products />} />
+          
+          {/* Single Product Details Route */}
+          <Route path="/product/:id" element={<ProductDetails />} />
+          
+          {/* Offers & Discounts */}
+          <Route path="/offers" element={<Offers />} />
+          
+          {/* Contact & Bulk Enquiry */}
+          <Route path="/contact" element={<Contact />} />
+          
+          {/* Shopping Cart & Checkout */}
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          } />
+          
+          {/* Auth & Profile */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <ProfileLayout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<MyProfile />} />
+            <Route path="me" element={<MyProfile />} />
+            <Route path="orders" element={<OrderHistory />} />
+            <Route path="orders/:id" element={<OrderDetails />} />
+          </Route>
+
+          {/* Policies */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          
+          {/* Fallback Catch-all Route */}
+          <Route path="*" element={<Home />} />
+        </Routes>
+      </main>
+
+      {/* Global Overlays & Footer */}
+      {!isLoginPage && (
+        <>
+          <CartDrawer />
+          <SearchModal />
+          <Chatbot />
+          <Footer />
+        </>
+      )}
+      <Toast />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
-      <CartProvider>
-        <SearchProvider>
+      <AuthProvider>
+        <CartProvider>
+          <SearchProvider>
           <Router>
           <ScrollToTop />
-          <div className="flex flex-col min-h-screen bg-[#FAF7F2] text-stone-900 font-sans selection:bg-[#1B4D3E] selection:text-amber-200">
-            
-            {/* 1. Top Announcement Bar */}
-            <AnnouncementBar />
-
-            {/* 2. Glassmorphic Sticky Header */}
-            <Header />
-
-            {/* Main Page Content */}
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                
-                {/* Product listing & category routes */}
-                <Route path="/products" element={<Products />} />
-                <Route path="/products/:categorySlug" element={<Products />} />
-                
-                {/* Single Product Details Route */}
-                <Route path="/product/:id" element={<ProductDetails />} />
-                
-                {/* Offers & Discounts */}
-                <Route path="/offers" element={<Offers />} />
-                
-                {/* Contact & Bulk Enquiry */}
-                <Route path="/contact" element={<Contact />} />
-                
-                {/* Shopping Cart & Checkout */}
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-
-                {/* Policies */}
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/shipping-policy" element={<ShippingPolicy />} />
-                <Route path="/refund-policy" element={<RefundPolicy />} />
-                
-                {/* Fallback Catch-all Route */}
-                <Route path="*" element={<Home />} />
-              </Routes>
-            </main>
-
-            {/* Global Overlays & Footer */}
-            <CartDrawer />
-            <SearchModal />
-            <Toast />
-            <Chatbot />
-            <Footer />
-
-          </div>
+          <AppLayout />
         </Router>
-      </SearchProvider>
-    </CartProvider>
-  </ErrorBoundary>
+          </SearchProvider>
+        </CartProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

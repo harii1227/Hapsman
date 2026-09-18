@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, ShoppingBag, Heart, Eye, Check } from 'lucide-react';
+import { Star, ShoppingBag, Heart, Eye, Check, Plus, Minus } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import ProductBadge from '../common/ProductBadge';
 
 export default function ProductCard({ product, onQuickView }) {
-  const { addItem } = useCart();
+  const { cartItems, addItem, increaseQuantity, decreaseQuantity } = useCart();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+
+  const cartItem = cartItems.find(item => item.id === product.id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -133,26 +135,44 @@ export default function ProductCard({ product, onQuickView }) {
             )}
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-sm ${
-              isAdded
-                ? 'bg-emerald-700 text-white'
-                : 'bg-[#1B4D3E] text-amber-200 hover:bg-[#0F2C23] hover:shadow-md'
-            }`}
-          >
-            {isAdded ? (
-              <>
-                <Check className="w-3.5 h-3.5" />
-                <span>Added</span>
-              </>
-            ) : (
-              <>
-                <ShoppingBag className="w-3.5 h-3.5" />
-                <span>Add to Cart</span>
-              </>
-            )}
-          </button>
+          {cartItem ? (
+            <div className="flex items-center space-x-1 bg-[#1B4D3E] rounded-full p-1 shadow-md border border-[#143D31]" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+              <button 
+                onClick={() => decreaseQuantity(product.id)}
+                className="w-7 h-7 flex items-center justify-center rounded-full bg-[#143D31] text-amber-200 hover:bg-[#0a201a] transition-colors"
+              >
+                <Minus className="w-3.5 h-3.5" strokeWidth={3} />
+              </button>
+              <span className="text-sm font-bold text-white w-5 text-center leading-none">{cartItem.quantity}</span>
+              <button 
+                onClick={() => increaseQuantity(product.id)}
+                className="w-7 h-7 flex items-center justify-center rounded-full bg-amber-400 text-[#1B4D3E] hover:bg-amber-300 transition-colors shadow-sm"
+              >
+                <Plus className="w-3.5 h-3.5" strokeWidth={3} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-sm ${
+                isAdded
+                  ? 'bg-emerald-700 text-white'
+                  : 'bg-[#1B4D3E] text-amber-200 hover:bg-[#0F2C23] hover:shadow-md'
+              }`}
+            >
+              {isAdded ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Added</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Add to Cart</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

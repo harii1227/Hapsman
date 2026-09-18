@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, CheckCircle2, ArrowRight, CreditCard, Smartphone, Banknote } from 'lucide-react';
+import { ShieldCheck, Lock, CheckCircle2, ArrowRight, CreditCard, Smartphone, Banknote, Loader2 } from 'lucide-react';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { useCart } from '../context/CartContext';
+import { loadRazorpayScript } from '../utils/razorpay';
+import { supabase } from '../utils/supabaseClient';
+import { useAuth } from '../context/AuthContext';
 
 export default function Checkout() {
   const { cartItems, getSubtotal, getDiscountAmount, getShippingFee, getTotal, clearCart } = useCart();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [paymentMethod, setPaymentMethod] = useState('upi');
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [customer, setCustomer] = useState({
     name: '',
@@ -22,48 +27,172 @@ export default function Checkout() {
     pincode: ''
   });
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (!customer.name || !customer.phone || !customer.address || !customer.city || !customer.state || !customer.pincode) {
       alert('Please fill out all required shipping fields.');
       return;
     }
 
-    const newOrderId = 'HAP-' + Math.floor(100000 + Math.random() * 900000);
-    
-    let message = `*NEW ORDER REQUEST | HAPSMAN*\n`;
-    message += `----------------------------------------\n`;
-    message += `*Order ID:* ${newOrderId}\n\n`;
+    const generateWhatsAppMessage = (orderIdStr, paymentMethodStr) => {
+      let message = `*NEW ORDER REQUEST | HAPSMAN*\n`;
+      message += `----------------------------------------\n`;
+      message += `*Order ID:* ${orderIdStr}\n\n`;
 
-    message += `*CUSTOMER DETAILS*\n`;
-    message += `- *Name:* ${customer.name}\n`;
-    message += `- *Phone:* ${customer.phone}\n`;
-    message += `- *Address:* ${customer.address}, ${customer.city}, ${customer.state} - ${customer.pincode}\n\n`;
-    
-    message += `*ORDER ITEMS*\n`;
-    cartItems.forEach(item => {
-      message += `> ${item.quantity}x ${item.name} *(₹${item.price * item.quantity})*\n`;
-    });
-    message += `\n----------------------------------------\n`;
-    
-    const methodStr = paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod === 'upi' ? 'UPI Instant' : 'Credit/Debit Card';
-    
-    message += `*BILLING SUMMARY*\n`;
-    message += `- *Subtotal:* ₹${getSubtotal()}\n`;
-    if (getDiscountAmount() > 0) message += `- *Discount:* -₹${getDiscountAmount()}\n`;
-    message += `- *Shipping:* ${getShippingFee() === 0 ? 'FREE' : '₹' + getShippingFee()}\n`;
-    message += `- *Payment Method:* ${methodStr}\n`;
-    message += `----------------------------------------\n`;
-    message += `*TOTAL PAYABLE: ₹${getTotal()}*\n`;
-    message += `----------------------------------------\n\n`;
-    message += `_Please confirm my order and share the next steps!_`;
+      message += `*CUSTOMER DETAILS*\n`;
+      message += `- *Name:* ${customer.name}\n`;
+      message += `- *Phone:* ${customer.phone}\n`;
+      message += `- *Address:* ${customer.address}, ${customer.city}, ${customer.state} - ${customer.pincode}\n\n`;
+      
+      message += `*ORDER ITEMS*\n`;
+      cartItems.forEach(item => {
+        message += `> ${item.quantity}x ${item.name} *(₹${item.price * item.quantity})*\n`;
+      });
+      message += `\n----------------------------------------\n`;
+      
+      message += `*BILLING SUMMARY*\n`;
+      message += `- *Subtotal:* ₹${getSubtotal()}\n`;
+      if (getDiscountAmount() > 0) message += `- *Discount:* -₹${getDiscountAmount()}\n`;
+      message += `- *Shipping:* ${getShippingFee() === 0 ? 'FREE' : '₹' + getShippingFee()}\n`;
+      message += `- *Payment Method:* ${paymentMethodStr}\n`;
+      message += `----------------------------------------\n`;
+      message += `*TOTAL PAYABLE: ₹${getTotal()}*\n`;
+      message += `----------------------------------------\n\n`;
+      message += `_Please confirm my order and share the next steps!_`;
+      message += `----------------------------------------\n\n`;
+      message += `_Please confirm my order and share the next steps!_`;
+      return message;
+    };
 
-    const whatsappUrl = `https://wa.me/916388239986?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    const saveOrderToSupabase = async (orderIdStr, paymentMethodStr) => {
+      if (!user) return;
+      try {
+        const { error: orderError } = await supabase.from('orders').insert({
+          id: orderIdStr,
+          user_id: user.id,
+          total_amount: getTotal(),
+          status: 'Pending',
+          shipping_name: customer.name,
+          shipping_phone: customer.phone,
+          shipping_address: customer.address,
+          shipping_city: customer.city,
+          shipping_state: customer.state,
+          shipping_pincode: customer.pincode,
+          payment_method: paymentMethodStr
+        });
+        if (orderError) throw orderError;
+        
+        const itemsToInsert = cartItems.map(item => ({
+          order_id: orderIdStr,
+          product_id: item.id?.toString() || 'unknown',
+          product_name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          variant_name: item.variant || null
+        }));
+        
+        const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);
+        if (itemsError) throw itemsError;
+        
+      } catch (err) {
+        console.error("Failed to save order to Supabase", err);
+      }
+    };
 
-    setOrderId(newOrderId);
-    setIsOrderPlaced(true);
-    clearCart();
+    if (paymentMethod === 'cod') {
+      const newOrderId = 'HAP-' + Math.floor(100000 + Math.random() * 900000);
+      const msg = generateWhatsAppMessage(newOrderId, 'Cash on Delivery');
+      const whatsappUrl = `https://wa.me/916388239986?text=${encodeURIComponent(msg)}`;
+      window.open(whatsappUrl, '_blank');
+      setOrderId(newOrderId);
+      setIsOrderPlaced(true);
+      await saveOrderToSupabase(newOrderId, 'Cash on Delivery');
+      clearCart();
+      return;
+    }
+
+    // Razorpay Flow for UPI / Cards
+    setIsProcessing(true);
+    try {
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        alert('Razorpay SDK failed to load. Are you offline?');
+        setIsProcessing(false);
+        return;
+      }
+
+      // Create Order on Backend
+      const response = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: getTotal() * 100 }) // amount in paise
+      });
+      
+      const orderData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(orderData.message || 'Failed to create order');
+      }
+
+      const options = {
+        key: orderData.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_dummy_key', 
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'HAPSMAN',
+        description: 'Order Payment',
+        image: '/hapsman-logo.jpg',
+        order_id: orderData.id,
+        handler: async function (res) {
+          try {
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: res.razorpay_order_id,
+                razorpay_payment_id: res.razorpay_payment_id,
+                razorpay_signature: res.razorpay_signature,
+                dummy: orderData.dummy
+              })
+            });
+            const verifyData = await verifyRes.json();
+            
+              if (verifyData.success) {
+                const msg = generateWhatsAppMessage(orderData.id, 'Online Payment (Razorpay)');
+                const whatsappUrl = `https://wa.me/916388239986?text=${encodeURIComponent(msg)}`;
+                window.open(whatsappUrl, '_blank');
+                setOrderId(orderData.id);
+                setIsOrderPlaced(true);
+                await saveOrderToSupabase(orderData.id, 'Online Payment');
+                clearCart();
+              } else {
+              alert('Payment Verification Failed!');
+            }
+          } catch (err) {
+            console.error(err);
+            alert('Error verifying payment.');
+          }
+        },
+        prefill: {
+          name: customer.name,
+          email: customer.email,
+          contact: customer.phone
+        },
+        theme: {
+          color: '#1B4D3E'
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response) {
+        alert(response.error.description);
+      });
+      rzp1.open();
+    } catch (error) {
+      console.error(error);
+      alert('Error initiating checkout. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (isOrderPlaced) {
@@ -266,10 +395,6 @@ export default function Checkout() {
                   <input type="radio" checked={paymentMethod === 'cod'} readOnly className="accent-[#1B4D3E]" />
                 </label>
               </div>
-
-              <div className="pt-2 text-[11px] text-stone-400 italic">
-                * Note: Real Razorpay / Stripe gateway integration ready for backend setup.
-              </div>
             </div>
 
           </div>
@@ -318,10 +443,15 @@ export default function Checkout() {
 
               <button
                 type="submit"
-                className="w-full py-4 bg-[#1B4D3E] text-amber-200 font-extrabold text-sm rounded-2xl hover:bg-[#0F2C23] transition-colors shadow-lg flex items-center justify-center space-x-2"
+                disabled={isProcessing}
+                className="w-full py-4 bg-[#1B4D3E] text-amber-200 font-extrabold text-sm rounded-2xl hover:bg-[#0F2C23] transition-colors shadow-lg flex items-center justify-center space-x-2 disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                <Lock className="w-4 h-4" />
-                <span>Place Order (₹{getTotal()})</span>
+                {isProcessing ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Lock className="w-4 h-4" />
+                )}
+                <span>{isProcessing ? 'Processing...' : `Place Order (₹${getTotal()})`}</span>
               </button>
             </div>
           </div>
