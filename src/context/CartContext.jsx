@@ -81,9 +81,19 @@ export const CartProvider = ({ children }) => {
   const getDiscountAmount = () => {
     const subtotal = getSubtotal();
     if (!appliedCoupon) return 0;
-    if (appliedCoupon.code === 'HAPSMAN10') return Math.round(subtotal * 0.10);
-    if (appliedCoupon.code === 'FESTIVE100') return 100;
-    if (appliedCoupon.code === 'COMBO20') return Math.round(subtotal * 0.20);
+    if (appliedCoupon.isActive === false) return 0;
+
+    // Generic percentage discount
+    if (appliedCoupon.discountType === 'percentage' || appliedCoupon.percentage !== undefined || appliedCoupon.discountValue !== undefined) {
+      const pct = Number(appliedCoupon.percentage ?? appliedCoupon.discountValue ?? 0);
+      if (pct > 0) return Math.round(subtotal * (pct / 100));
+    }
+
+    // Generic fixed discount
+    if (appliedCoupon.discountType === 'fixed' || appliedCoupon.fixedAmount !== undefined) {
+      return Number(appliedCoupon.fixedAmount ?? appliedCoupon.discountValue ?? 0);
+    }
+
     return 0;
   };
 
@@ -106,7 +116,11 @@ export const CartProvider = ({ children }) => {
 
   const applyCoupon = (couponObj) => {
     const subtotal = getSubtotal();
-    if (subtotal < couponObj.minOrder) {
+    if (couponObj.isActive === false) {
+      showToast(`Coupon ${couponObj.code} is currently disabled.`);
+      return false;
+    }
+    if (couponObj.minOrder && subtotal < couponObj.minOrder) {
       showToast(`Minimum order of ₹${couponObj.minOrder} required for ${couponObj.code}`);
       return false;
     }

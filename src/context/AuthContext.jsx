@@ -15,7 +15,23 @@ export function AuthProvider({ children }) {
         console.error('Error fetching session:', error.message);
       }
       setUser(session?.user ?? null);
+      if (session?.user) {
+        syncUserProfile(session.user);
+      }
       setLoading(false);
+    };
+
+    const syncUserProfile = async (u) => {
+      if (!u) return;
+      try {
+        await supabase.from('profiles').upsert({
+          id: u.id,
+          email: u.email,
+          last_login: new Date().toISOString()
+        }, { onConflict: 'id' });
+      } catch {
+        // Silently skip if table is not yet migrated
+      }
     };
 
     getSession();
@@ -24,6 +40,9 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          syncUserProfile(session.user);
+        }
         setLoading(false);
       }
     );

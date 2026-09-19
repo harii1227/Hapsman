@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, Tag, Truck, ShieldCheck } from 'lucide-react';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { useCart } from '../context/CartContext';
-import { offers } from '../data/offers';
+import { offers, getLiveCoupons } from '../data/offers';
 
 export default function Cart() {
   const {
@@ -29,12 +29,17 @@ export default function Cart() {
   const handleApplyCoupon = (e) => {
     e.preventDefault();
     if (!couponInput.trim()) return;
-    const match = offers.find(o => o.code.toUpperCase() === couponInput.trim().toUpperCase());
+    const liveOffers = getLiveCoupons();
+    const match = liveOffers.find(o => o.code.toUpperCase() === couponInput.trim().toUpperCase());
     if (match) {
+      if (match.isActive === false) {
+        alert(`Coupon ${match.code} is currently disabled.`);
+        return;
+      }
       applyCoupon(match);
       setCouponInput('');
     } else {
-      alert('Invalid coupon code. Try HAPSMAN10 or FESTIVE100.');
+      alert('Invalid coupon code.');
     }
   };
 

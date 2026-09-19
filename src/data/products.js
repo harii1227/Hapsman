@@ -1,4 +1,4 @@
-export const products = [
+const rawProducts = [
   // --- MILLETS ---
   {
     id: 'millet-1',
@@ -539,3 +539,34 @@ export const products = [
     gallery: ['/images/999.png']
   }
 ];
+
+// Ensure each and every product has live pricing and 50 pcs stock quantity
+export const getCatalogProducts = () => {
+  let priceOverrides = {};
+  let stockQuantities = {};
+  let stockOverrides = {};
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      priceOverrides = JSON.parse(localStorage.getItem('hapsman_price_overrides') || '{}');
+      stockQuantities = JSON.parse(localStorage.getItem('hapsman_stock_quantities') || '{}');
+      stockOverrides = JSON.parse(localStorage.getItem('hapsman_stock_overrides') || '{}');
+    } catch {
+      // Ignore
+    }
+  }
+
+  return rawProducts.map(product => {
+    const customPrice = priceOverrides[product.id] !== undefined ? priceOverrides[product.id] : product.price;
+    const customQty = stockQuantities[product.id] !== undefined ? stockQuantities[product.id] : 50;
+    const customStatus = stockOverrides[product.id] || (customQty === 0 ? 'out_of_stock' : customQty <= 25 ? 'low_stock' : 'in_stock');
+    return {
+      ...product,
+      price: customPrice,
+      stock: customQty,
+      stockQuantity: customQty,
+      stockStatus: customStatus
+    };
+  });
+};
+
+export const products = getCatalogProducts();

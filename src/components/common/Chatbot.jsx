@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, PhoneCall, Sparkles, Bot, User, ChevronDown } from 'lucide-react';
+import { getLiveCoupons } from '../../data/offers';
 
 const QUICK_QUESTIONS = [
   { id: 'call', label: '📞 Call / Connect Support' },
@@ -123,9 +124,24 @@ export default function Chatbot() {
       queryLower.includes('coupon') ||
       queryLower.includes('deal')
     ) {
+      const active = getLiveCoupons().filter((c) => c.isActive !== false);
+      if (active.length > 0) {
+        const list = active
+          .map(
+            (c) =>
+              `• Code: ${c.code} (${c.percentage || c.discountValue}% OFF${
+                c.minOrder ? ` on orders ₹${c.minOrder}+` : ''
+              })`
+          )
+          .join('\n');
+        return {
+          type: 'text',
+          text: `✨ Active Hapsman Store Offers:\n${list}\n• Free Express Shipping on orders above ₹499!`,
+        };
+      }
       return {
         type: 'text',
-        text: '✨ Current Hapsman Offers:\n• Use code HAPSMAN10 for 10% OFF on your first order\n• Free Express Shipping on all orders above ₹499\n• Up to 20% OFF on Festive & Corporate Hampers!',
+        text: '✨ Current Hapsman Offers:\n• Free Express Shipping on orders above ₹499\n• Special Bulk & Corporate Hampers discounts available on request!',
       };
     }
 

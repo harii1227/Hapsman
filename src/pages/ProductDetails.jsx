@@ -180,10 +180,15 @@ export default function ProductDetails() {
             {/* Quantity Selector & Add to Cart / Buy Now */}
             <div className="space-y-4 pt-6 border-t border-stone-200">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">SELECT QUANTITY:</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">SELECT QUANTITY:</span>
+                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                    {product.stock || 50} pcs in stock
+                  </span>
+                </div>
                 <QuantitySelector
                   quantity={quantity}
-                  onIncrease={() => setQuantity(q => q + 1)}
+                  onIncrease={() => setQuantity(q => Math.min(product.stock || 50, q + 1))}
                   onDecrease={() => setQuantity(q => Math.max(1, q - 1))}
                 />
               </div>

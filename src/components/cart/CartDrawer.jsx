@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag, Truck, CheckCircle2 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { offers } from '../../data/offers';
+import { offers, getLiveCoupons } from '../../data/offers';
 
 export default function CartDrawer() {
   const {
@@ -35,15 +35,20 @@ export default function CartDrawer() {
     e.preventDefault();
     if (!couponInput.trim()) return;
 
-    const matchedOffer = offers.find(
+    const liveOffers = getLiveCoupons();
+    const matchedOffer = liveOffers.find(
       (o) => o.code.toUpperCase() === couponInput.trim().toUpperCase()
     );
 
     if (matchedOffer) {
+      if (matchedOffer.isActive === false) {
+        alert(`Coupon ${matchedOffer.code} is currently disabled.`);
+        return;
+      }
       applyCoupon(matchedOffer);
       setCouponInput('');
     } else {
-      alert('Invalid coupon code. Try HAPSMAN10 or FESTIVE100.');
+      alert('Invalid coupon code.');
     }
   };
 
@@ -203,7 +208,7 @@ export default function CartDrawer() {
                       type="text"
                       value={couponInput}
                       onChange={(e) => setCouponInput(e.target.value)}
-                      placeholder="Coupon Code (e.g. HAPSMAN10)"
+                      placeholder="Enter promo or coupon code"
                       className="w-full pl-8 pr-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-[#1B4D3E]"
                     />
                   </div>

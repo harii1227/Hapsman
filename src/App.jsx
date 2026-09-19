@@ -22,6 +22,7 @@ import Login from './pages/Login';
 import { CartProvider } from './context/CartContext';
 import { SearchProvider } from './context/SearchContext';
 import { AuthProvider } from './context/AuthContext';
+import { AdminProvider } from './context/AdminContext';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
@@ -29,6 +30,14 @@ import ProfileLayout from './components/profile/ProfileLayout';
 import MyProfile from './pages/profile/MyProfile';
 import OrderHistory from './pages/profile/OrderHistory';
 import OrderDetails from './pages/profile/OrderDetails';
+
+import AdminRoute from './components/admin/AdminRoute';
+import AdminLayout from './components/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminCustomers from './pages/admin/AdminCustomers';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminCoupons from './pages/admin/AdminCoupons';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -41,11 +50,13 @@ function ScrollToTop() {
 function AppLayout() {
   const { pathname } = useLocation();
   const isLoginPage = pathname === '/login';
+  const isAdminPage = pathname.startsWith('/arhadmin');
+  const hideStoreChroming = isLoginPage || isAdminPage;
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAF7F2] text-stone-900 font-sans selection:bg-[#1B4D3E] selection:text-amber-200">
+    <div className={`flex flex-col ${isAdminPage ? 'h-screen overflow-hidden bg-[#F4F6F5]' : 'min-h-screen bg-[#FAF7F2]'} text-stone-900 font-sans selection:bg-[#1B4D3E] selection:text-amber-200`}>
       
-      {!isLoginPage && (
+      {!hideStoreChroming && (
         <>
           {/* 1. Top Announcement Bar */}
           <AnnouncementBar />
@@ -56,7 +67,7 @@ function AppLayout() {
       )}
 
       {/* Main Page Content */}
-      <main className="flex-grow">
+      <main className={isAdminPage ? 'h-screen overflow-hidden flex-1' : 'flex-grow'}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -95,6 +106,22 @@ function AppLayout() {
             <Route path="orders/:id" element={<OrderDetails />} />
           </Route>
 
+          {/* Dedicated Admin Portal */}
+          <Route
+            path="/arhadmin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="coupons" element={<AdminCoupons />} />
+          </Route>
+
           {/* Policies */}
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />} />
@@ -107,7 +134,7 @@ function AppLayout() {
       </main>
 
       {/* Global Overlays & Footer */}
-      {!isLoginPage && (
+      {!hideStoreChroming && (
         <>
           <CartDrawer />
           <SearchModal />
@@ -124,14 +151,16 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <CartProvider>
-          <SearchProvider>
-          <Router>
-          <ScrollToTop />
-          <AppLayout />
-        </Router>
-          </SearchProvider>
-        </CartProvider>
+        <AdminProvider>
+          <CartProvider>
+            <SearchProvider>
+              <Router>
+                <ScrollToTop />
+                <AppLayout />
+              </Router>
+            </SearchProvider>
+          </CartProvider>
+        </AdminProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

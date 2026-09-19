@@ -1,41 +1,36 @@
-export const offers = [
-  {
-    id: 'offer-1',
-    code: 'HAPSMAN10',
-    title: '10% OFF On Healthy Snacks',
-    subtitle: 'Applies on all Makhana & Millet packs above ₹499.',
-    discount: '10% OFF',
-    minOrder: 499,
-    category: 'Snacks & Millets',
-    validUntil: 'Limited Period Offer',
-    bgGradient: 'from-emerald-800 to-teal-900',
-    textColor: 'text-amber-300'
-  },
-  {
-    id: 'offer-2',
-    code: 'FESTIVE100',
-    title: 'Flat ₹100 OFF On Premium Hampers',
-    subtitle: 'Celebrate with authentic Hapsman luxury gift hampers.',
-    discount: 'FLAT ₹100 OFF',
-    minOrder: 1200,
-    category: 'Gift Hampers',
-    validUntil: 'Festive Season Special',
-    bgGradient: 'from-amber-900 to-stone-900',
-    textColor: 'text-amber-400'
-  },
-  {
-    id: 'offer-3',
-    code: 'COMBO20',
-    title: 'Buy More, Save More Combo',
-    subtitle: 'Get 20% OFF when you build your custom snack & sweet box.',
-    discount: '20% OFF',
-    minOrder: 999,
-    category: 'Custom Combos',
-    validUntil: 'Everyday Savings',
-    bgGradient: 'from-stone-900 to-emerald-950',
-    textColor: 'text-emerald-300'
+export const initialOffers = [];
+
+export const getLiveCoupons = () => {
+  let customCoupons = [];
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const saved = localStorage.getItem('hapsman_admin_coupons');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Exclude any legacy hardcoded demo offers (HAPSMAN10, FESTIVE100, COMBO20, offer-1, etc.)
+          const legacyCodes = ['HAPSMAN10', 'FESTIVE100', 'COMBO20'];
+          customCoupons = parsed.filter(
+            (c) =>
+              c &&
+              !legacyCodes.includes(c.code?.toUpperCase()) &&
+              !String(c.id || '').startsWith('offer-')
+          );
+          // If legacy coupons were found and filtered out, rewrite clean list to localStorage
+          if (customCoupons.length !== parsed.length) {
+            localStorage.setItem('hapsman_admin_coupons', JSON.stringify(customCoupons));
+          }
+        }
+      }
+    } catch {
+      // Ignore
+    }
   }
-];
+
+  return customCoupons;
+};
+
+export const offers = getLiveCoupons();
 
 export const promotionalBanners = [
   {
