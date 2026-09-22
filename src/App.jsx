@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import AnnouncementBar from './components/layout/AnnouncementBar';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -162,6 +163,7 @@ export default function App() {
           </CartProvider>
         </AdminProvider>
       </AuthProvider>
+      <Analytics />
     </ErrorBoundary>
   );
 }
