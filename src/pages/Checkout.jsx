@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, CheckCircle2, ArrowRight, CreditCard, Smartphone, Banknote, Loader2 } from 'lucide-react';
+import { Lock, CheckCircle2, ArrowRight, CreditCard, Smartphone, Banknote, Loader2 } from 'lucide-react';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { useCart } from '../context/CartContext';
 import { loadRazorpayScript } from '../utils/razorpay';
@@ -34,34 +34,26 @@ export default function Checkout() {
       return;
     }
 
-    const generateWhatsAppMessage = (orderIdStr, paymentMethodStr) => {
-      let message = `*NEW ORDER REQUEST | HAPSMAN*\n`;
-      message += `----------------------------------------\n`;
-      message += `*Order ID:* ${orderIdStr}\n\n`;
 
-      message += `*CUSTOMER DETAILS*\n`;
-      message += `- *Name:* ${customer.name}\n`;
-      message += `- *Phone:* ${customer.phone}\n`;
-      message += `- *Address:* ${customer.address}, ${customer.city}, ${customer.state} - ${customer.pincode}\n\n`;
-      
-      message += `*ORDER ITEMS*\n`;
-      cartItems.forEach(item => {
-        message += `> ${item.quantity}x ${item.name} *(₹${item.price * item.quantity})*\n`;
-      });
-      message += `\n----------------------------------------\n`;
-      
-      message += `*BILLING SUMMARY*\n`;
-      message += `- *Subtotal:* ₹${getSubtotal()}\n`;
-      if (getDiscountAmount() > 0) message += `- *Discount:* -₹${getDiscountAmount()}\n`;
-      message += `- *Shipping:* ${getShippingFee() === 0 ? 'FREE' : '₹' + getShippingFee()}\n`;
-      message += `- *Payment Method:* ${paymentMethodStr}\n`;
-      message += `----------------------------------------\n`;
-      message += `*TOTAL PAYABLE: ₹${getTotal()}*\n`;
-      message += `----------------------------------------\n\n`;
-      message += `_Please confirm my order and share the next steps!_`;
-      message += `----------------------------------------\n\n`;
-      message += `_Please confirm my order and share the next steps!_`;
-      return message;
+    const sendOrderEmail = async (orderIdStr, paymentMethodStr) => {
+      try {
+        await fetch('/api/send-order-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: orderIdStr,
+            customer: { ...customer, email: user?.email || customer.email },
+            cartItems,
+            paymentMethod: paymentMethodStr,
+            subtotal: getSubtotal(),
+            discount: getDiscountAmount(),
+            shipping: getShippingFee(),
+            total: getTotal(),
+          }),
+        });
+      } catch (err) {
+        console.warn('Email notification failed (non-critical):', err);
+      }
     };
 
     const saveOrderToSupabase = async (orderIdStr, paymentMethodStr) => {
@@ -101,13 +93,13 @@ export default function Checkout() {
 
     if (paymentMethod === 'cod') {
       const newOrderId = 'HAP-' + Math.floor(100000 + Math.random() * 900000);
-      const msg = generateWhatsAppMessage(newOrderId, 'Cash on Delivery');
-      const whatsappUrl = `https://wa.me/916388239986?text=${encodeURIComponent(msg)}`;
-      window.open(whatsappUrl, '_blank');
+      setIsProcessing(true);
       setOrderId(newOrderId);
-      setIsOrderPlaced(true);
       await saveOrderToSupabase(newOrderId, 'Cash on Delivery');
+      await sendOrderEmail(newOrderId, 'Cash on Delivery');
       clearCart();
+      setIsOrderPlaced(true);
+      setIsProcessing(false);
       return;
     }
 
@@ -157,12 +149,10 @@ export default function Checkout() {
             const verifyData = await verifyRes.json();
             
               if (verifyData.success) {
-                const msg = generateWhatsAppMessage(orderData.id, 'Online Payment (Razorpay)');
-                const whatsappUrl = `https://wa.me/916388239986?text=${encodeURIComponent(msg)}`;
-                window.open(whatsappUrl, '_blank');
                 setOrderId(orderData.id);
                 setIsOrderPlaced(true);
                 await saveOrderToSupabase(orderData.id, 'Online Payment');
+                await sendOrderEmail(orderData.id, 'Online Payment (Razorpay)');
                 clearCart();
               } else {
               alert('Payment Verification Failed!');
