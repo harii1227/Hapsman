@@ -29,8 +29,8 @@ export default function Checkout() {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    if (!customer.name || !customer.phone || !customer.address || !customer.city || !customer.state || !customer.pincode) {
-      alert('Please fill out all required shipping fields.');
+    if (!customer.name || !customer.phone || !customer.email || !customer.address || !customer.city || !customer.state || !customer.pincode) {
+      alert('Please fill out all required shipping fields, including email.');
       return;
     }
 
@@ -269,6 +269,20 @@ export default function Checkout() {
                     className="w-full px-4 py-3 border border-stone-300 rounded-xl text-xs focus:outline-none focus:border-[#1B4D3E]"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={customer.email}
+                  onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                  placeholder="your.email@example.com"
+                  className="w-full px-4 py-3 border border-stone-300 rounded-xl text-xs focus:outline-none focus:border-[#1B4D3E]"
+                />
               </div>
 
               <div>

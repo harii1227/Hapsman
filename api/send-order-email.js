@@ -1,12 +1,4 @@
 import nodemailer from 'nodemailer';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Logo path — resolve from project root's /public folder
-const LOGO_PATH = path.join(__dirname, '..', 'public', 'hapsman-logo.png');
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -35,14 +27,10 @@ export default async function handler(req, res) {
     },
   });
 
-  // ─── Build Items Table HTML ───────────────────────────────────────────────
-  // ─── Logo CID Attachment ─────────────────────────────────────────────────
-  const logoAttachment = {
-    filename: 'hapsman-logo.png',
-    path: LOGO_PATH,
-    cid: 'hapsman_logo',        // referenced in HTML as cid:hapsman_logo
-    contentDisposition: 'inline',
-  };
+  // ─── Logo URL ────────────────────────────────────────────────────────────
+  const protocol = req.headers['x-forwarded-proto'] || 'http';
+  const host = req.headers.host || 'naturagroharvest.com'; // fallback
+  const logoUrl = `${protocol}://${host}/hapsman-logo.png`;
 
   const itemsTableRows = cartItems
     .map(
@@ -69,7 +57,7 @@ export default async function handler(req, res) {
         <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#1B4D3E 0%,#2d6b56 100%);border-radius:16px 16px 0 0;padding:28px 40px 24px;text-align:center;">
-            <img src="cid:hapsman_logo" alt="NaturaGro Harvest" width="90" height="90" style="display:block;margin:0 auto 14px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);object-fit:cover;" />
+            <img src="${logoUrl}" alt="NaturaGro Harvest" width="90" height="90" style="display:block;margin:0 auto 14px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);object-fit:cover;" />
             <p style="margin:0 0 4px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#a7d9c6;font-weight:600;">NaturaGro Harvest</p>
             <h1 style="margin:0;font-size:26px;color:#ffffff;font-weight:800;letter-spacing:-0.5px;">🌿 Order Confirmed!</h1>
             <p style="margin:10px 0 0;font-size:14px;color:#a7d9c6;">Thank you for choosing us, ${customer.name}!</p>
@@ -168,7 +156,7 @@ export default async function handler(req, res) {
         <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#b45309 0%,#d97706 100%);border-radius:16px 16px 0 0;padding:24px 40px 22px;text-align:center;">
-            <img src="cid:hapsman_logo" alt="NaturaGro Harvest" width="72" height="72" style="display:block;margin:0 auto 12px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);object-fit:cover;" />
+            <img src="${logoUrl}" alt="NaturaGro Harvest" width="72" height="72" style="display:block;margin:0 auto 12px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);object-fit:cover;" />
             <p style="margin:0 0 4px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#fde68a;font-weight:600;">Admin Alert — NaturaGro Harvest</p>
             <h1 style="margin:0;font-size:24px;color:#ffffff;font-weight:800;">🛒 New Order Received!</h1>
             <p style="margin:8px 0 0;font-size:13px;color:#fde68a;">Order ID: <strong>${orderId}</strong></p>
@@ -260,7 +248,6 @@ export default async function handler(req, res) {
         to: customer.email,
         subject: `✅ Order Confirmed — ${orderId} | NaturaGro Harvest`,
         html: customerEmailHTML,
-        attachments: [logoAttachment],
       });
     }
 
@@ -270,7 +257,6 @@ export default async function handler(req, res) {
       to: GMAIL_USER,
       subject: `🆕 New Order Received — ${orderId} | ₹${total}`,
       html: adminEmailHTML,
-      attachments: [logoAttachment],
     });
 
     return res.status(200).json({ success: true, message: 'Emails sent successfully' });
