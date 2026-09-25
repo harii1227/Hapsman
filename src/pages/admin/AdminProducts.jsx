@@ -484,19 +484,7 @@ export default function AdminProducts() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                resetAllStockTo(0);
-                setDrafts({});
-                showToast('All product stocks set to 0 pcs (Out of Stock)!');
-              }}
-              className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-all flex items-center space-x-1.5 shadow-2xs cursor-pointer"
-              title="Set stock of all products to 0 pcs"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
-              <span>Set All Stock to 0</span>
-            </button>
+{/* Set All Stock button removed */}
 
             <div className="relative w-full md:w-64">
               <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />

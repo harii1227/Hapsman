@@ -3,13 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import ProductCard from '../components/products/ProductCard';
 import QuickViewModal from '../components/products/QuickViewModal';
 import Breadcrumb from '../components/common/Breadcrumb';
-import { products } from '../data/products';
 import { categories } from '../data/categories';
+import { useAdmin } from '../context/AdminContext';
 import { SlidersHorizontal, Search, X, Check } from 'lucide-react';
 
 export default function Products() {
   const { categorySlug } = useParams();
   const navigate = useNavigate();
+  const { products } = useAdmin();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(categorySlug || 'all');

@@ -13,10 +13,11 @@ import Newsletter from '../components/home/Newsletter';
 import QuickViewModal from '../components/products/QuickViewModal';
 
 import { categories } from '../data/categories';
-import { products } from '../data/products';
 import { testimonials } from '../data/testimonials';
+import { useAdmin } from '../context/AdminContext';
 
 export default function Home() {
+  const { products } = useAdmin();
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const categoryCarouselRef = useRef(null);
   const testimonialCarouselRef = useRef(null);
