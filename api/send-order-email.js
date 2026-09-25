@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { customer, cartItems, orderId, paymentMethod, subtotal, discount, shipping, total } = req.body;
+  const { customer, cartItems, orderId, paymentMethod, subtotal, discount, shipping, total, origin } = req.body;
 
   if (!customer || !cartItems || !orderId) {
     return res.status(400).json({ message: 'Missing required order data' });
@@ -28,9 +28,8 @@ export default async function handler(req, res) {
   });
 
   // ─── Logo URL ────────────────────────────────────────────────────────────
-  const protocol = req.headers['x-forwarded-proto'] || 'http';
-  const host = req.headers.host || 'naturagroharvest.com'; // fallback
-  const logoUrl = `${protocol}://${host}/hapsman-logo.png`;
+  const siteUrl = origin || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://naturagroharvest.com');
+  const logoUrl = `${siteUrl}/hapsman-logo.png`;
 
   const itemsTableRows = cartItems
     .map(

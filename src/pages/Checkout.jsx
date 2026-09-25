@@ -49,6 +49,7 @@ export default function Checkout() {
             discount: getDiscountAmount(),
             shipping: getShippingFee(),
             total: getTotal(),
+            origin: window.location.origin,
           }),
         });
       } catch (err) {
