@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Breadcrumb from '../components/common/Breadcrumb';
+import AchievementSection from '../components/about/AchievementSection';
 import { ShieldCheck, Heart, Leaf, Award, MapPin, ArrowRight } from 'lucide-react';
 
 export default function About() {
@@ -45,6 +46,9 @@ export default function About() {
             </div>
           </div>
         </div>
+
+        {/* Achievement / Recognition Showcase */}
+        <AchievementSection />
 
         {/* 4 Pillars Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-16">

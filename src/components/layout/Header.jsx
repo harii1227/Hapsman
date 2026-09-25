@@ -46,11 +46,10 @@ export default function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 transition-all duration-300 ${
-          isScrolled
+        className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled
             ? 'glass-nav shadow-md py-2.5 border-b border-stone-200/60'
             : 'bg-[#FAF7F2] py-3.5 border-b border-stone-200/40'
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Left: Brand Logo & Title */}
@@ -84,33 +83,30 @@ export default function Header() {
           <nav className="hidden lg:flex items-center space-x-7">
             <Link
               to="/"
-              className={`text-sm font-medium transition-colors ${
-                isActive('/') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
-              }`}
+              className={`text-sm font-medium transition-colors ${isActive('/') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
+                }`}
             >
               Home
             </Link>
 
             <Link
               to="/about"
-              className={`text-sm font-medium transition-colors ${
-                isActive('/about') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
-              }`}
+              className={`text-sm font-medium transition-colors ${isActive('/about') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
+                }`}
             >
               About
             </Link>
 
             {/* Products Dropdown */}
-            <div 
+            <div
               className="relative group"
               onMouseEnter={() => setIsProductDropdownOpen(true)}
               onMouseLeave={() => setIsProductDropdownOpen(false)}
             >
               <Link
                 to="/products"
-                className={`text-sm font-medium flex items-center space-x-1 py-1 transition-colors ${
-                  isActive('/products') ? 'text-[#1B4D3E] font-semibold' : 'text-stone-700 hover:text-[#1B4D3E]'
-                }`}
+                className={`text-sm font-medium flex items-center space-x-1 py-1 transition-colors ${isActive('/products') ? 'text-[#1B4D3E] font-semibold' : 'text-stone-700 hover:text-[#1B4D3E]'
+                  }`}
               >
                 <span>Products</span>
                 <ChevronDown className="w-3.5 h-3.5 opacity-70 group-hover:rotate-180 transition-transform duration-200" />
@@ -118,25 +114,26 @@ export default function Header() {
 
               {/* Mega Dropdown Menu */}
               {isProductDropdownOpen && (
-                <div className="absolute top-full left-0 w-56 bg-white rounded-xl shadow-xl border border-stone-100 py-2 mt-1 z-50 animate-fade-in">
-                  {productCategories.map((cat) => (
-                    <Link
-                      key={cat.path}
-                      to={cat.path}
-                      className="block px-4 py-2 text-xs font-medium text-stone-700 hover:bg-emerald-50 hover:text-[#1B4D3E] transition-colors"
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
+                <div className="absolute top-full left-0 w-56 pt-2 z-50">
+                  <div className="bg-white rounded-xl shadow-xl border border-stone-100 py-2 animate-fade-in">
+                    {productCategories.map((cat) => (
+                      <Link
+                        key={cat.path}
+                        to={cat.path}
+                        className="block px-4 py-2 text-xs font-medium text-stone-700 hover:bg-emerald-50 hover:text-[#1B4D3E] transition-colors"
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
             <Link
               to="/products/gift-hampers"
-              className={`text-sm font-medium flex items-center space-x-1 transition-colors ${
-                isActive('/products/gift-hampers') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
-              }`}
+              className={`text-sm font-medium flex items-center space-x-1 transition-colors ${isActive('/products/gift-hampers') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
+                }`}
             >
               <Gift className="w-3.5 h-3.5 text-amber-600" />
               <span>Gift Hampers</span>
@@ -144,18 +141,16 @@ export default function Header() {
 
             <Link
               to="/offers"
-              className={`text-sm font-medium transition-colors ${
-                isActive('/offers') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
-              }`}
+              className={`text-sm font-medium transition-colors ${isActive('/offers') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
+                }`}
             >
               Offers
             </Link>
 
             <Link
               to="/contact"
-              className={`text-sm font-medium transition-colors ${
-                isActive('/contact') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
-              }`}
+              className={`text-sm font-medium transition-colors ${isActive('/contact') ? 'text-[#1B4D3E] font-semibold border-b-2 border-[#1B4D3E] pb-0.5' : 'text-stone-700 hover:text-[#1B4D3E]'
+                }`}
             >
               Contact
             </Link>

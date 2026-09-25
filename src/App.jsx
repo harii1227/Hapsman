@@ -8,6 +8,7 @@ import CartDrawer from './components/cart/CartDrawer';
 import SearchModal from './components/common/SearchModal';
 import Toast from './components/common/Toast';
 import Chatbot from './components/common/Chatbot';
+import TradeShowPopup from './components/common/TradeShowPopup';
 
 import Home from './pages/Home';
 import About from './pages/About';
@@ -140,6 +141,7 @@ function AppLayout() {
           <CartDrawer />
           <SearchModal />
           <Chatbot />
+          <TradeShowPopup />
           <Footer />
         </>
       )}
