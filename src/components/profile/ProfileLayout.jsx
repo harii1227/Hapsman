@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { User, Package, LogOut } from 'lucide-react';
+import { User, Package, LogOut, MapPin } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function ProfileLayout() {
@@ -21,6 +21,7 @@ export default function ProfileLayout() {
 
   const navItems = [
     { name: 'My Profile', path: '/profile/me', icon: User },
+    { name: 'Saved Addresses', path: '/profile/addresses', icon: MapPin },
     { name: 'Order History', path: '/profile/orders', icon: Package },
   ];
 

@@ -30,6 +30,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 
 import ProfileLayout from './components/profile/ProfileLayout';
 import MyProfile from './pages/profile/MyProfile';
+import SavedAddresses from './pages/profile/SavedAddresses';
 import OrderHistory from './pages/profile/OrderHistory';
 import OrderDetails from './pages/profile/OrderDetails';
 
@@ -104,6 +105,7 @@ function AppLayout() {
           }>
             <Route index element={<MyProfile />} />
             <Route path="me" element={<MyProfile />} />
+            <Route path="addresses" element={<SavedAddresses />} />
             <Route path="orders" element={<OrderHistory />} />
             <Route path="orders/:id" element={<OrderDetails />} />
           </Route>

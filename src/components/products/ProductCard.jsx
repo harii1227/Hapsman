@@ -68,12 +68,19 @@ export default function ProductCard({ product, onQuickView }) {
         </button>
 
         {/* Full-bleed Product Image */}
-        <Link to={`/product/${product.id}`} className="block w-full h-full">
+        <Link to={`/product/${product.id}`} className="block w-full h-full relative">
           <img
             src={productImage}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-none"
+            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-none ${product.stockStatus === 'out_of_stock' ? 'grayscale opacity-60' : ''}`}
           />
+          {product.stockStatus === 'out_of_stock' && (
+            <div className="absolute inset-0 bg-stone-900/20 flex flex-col items-center justify-end pb-6">
+              <span className="bg-rose-600 text-white font-bold text-[11px] uppercase tracking-wider py-1.5 px-4 rounded-full shadow-lg border border-rose-500/50">
+                Out of Stock
+              </span>
+            </div>
+          )}
         </Link>
       </div>
 
@@ -111,7 +118,7 @@ export default function ProductCard({ product, onQuickView }) {
               ))}
             </div>
             <span className="text-xs font-bold text-stone-800 ml-1">{product.rating || 4.9}</span>
-            <span className="text-[11px] text-stone-400">({product.reviewsCount || 120})</span>
+            <span className="text-[11px] text-stone-400">({product.reviewsCount || 15})</span>
           </div>
         </div>
 
@@ -135,7 +142,14 @@ export default function ProductCard({ product, onQuickView }) {
             )}
           </div>
 
-          {cartItem ? (
+          {product.stockStatus === 'out_of_stock' ? (
+            <button
+              disabled
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-stone-200 text-stone-400 cursor-not-allowed shadow-sm border border-stone-200"
+            >
+              Out of Stock
+            </button>
+          ) : cartItem ? (
             <div className="flex items-center space-x-1 bg-[#1B4D3E] rounded-full p-1 shadow-md border border-[#143D31]" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
               <button 
                 onClick={() => decreaseQuantity(product.id)}

@@ -141,7 +141,7 @@ export default function ProductDetails() {
                   ))}
                 </div>
                 <span className="text-xs font-bold text-stone-800">{product.rating || 4.9}</span>
-                <span className="text-xs text-stone-400">({product.reviewsCount || 160} Verified Buyer Reviews)</span>
+                <span className="text-xs text-stone-400">({product.reviewsCount || 18} Verified Buyer Reviews)</span>
               </div>
 
               {/* Price Row */}
@@ -182,34 +182,46 @@ export default function ProductDetails() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">SELECT QUANTITY:</span>
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                    {product.stock || 50} pcs in stock
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md border ${
+                    product.stockStatus === 'out_of_stock' 
+                      ? 'text-rose-700 bg-rose-50 border-rose-200'
+                      : 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                  }`}>
+                    {product.stockStatus === 'out_of_stock' ? 'Out of Stock' : `${product.stock || 0} pcs in stock`}
                   </span>
                 </div>
-                <QuantitySelector
-                  quantity={quantity}
-                  onIncrease={() => setQuantity(q => Math.min(product.stock || 50, q + 1))}
-                  onDecrease={() => setQuantity(q => Math.max(1, q - 1))}
-                />
+                {product.stockStatus !== 'out_of_stock' && (
+                  <QuantitySelector
+                    quantity={quantity}
+                    onIncrease={() => setQuantity(q => Math.min(product.stock || 0, q + 1))}
+                    onDecrease={() => setQuantity(q => Math.max(1, q - 1))}
+                  />
+                )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  onClick={handleAddToCart}
-                  className="w-full py-4 px-6 bg-[#1B4D3E] text-amber-200 hover:bg-[#0F2C23] rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
-                >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Add to Cart — ₹{product.price * quantity}</span>
-                </button>
+              {product.stockStatus === 'out_of_stock' ? (
+                <div className="bg-rose-50 text-rose-700 border border-rose-200 p-4 rounded-2xl text-center font-bold text-sm">
+                  This product is currently out of stock. Check back later!
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={handleAddToCart}
+                    className="w-full py-4 px-6 bg-[#1B4D3E] text-amber-200 hover:bg-[#0F2C23] rounded-2xl font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    <span>Add to Cart — ₹{product.price * quantity}</span>
+                  </button>
 
-                <button
-                  onClick={handleBuyNow}
-                  className="w-full py-4 px-6 bg-amber-400 text-stone-950 hover:bg-amber-300 rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
-                >
-                  <span>Buy Now</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+                  <button
+                    onClick={handleBuyNow}
+                    className="w-full py-4 px-6 bg-amber-400 text-stone-950 hover:bg-amber-300 rounded-2xl font-extrabold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
+                  >
+                    <span>Buy Now</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
           </div>

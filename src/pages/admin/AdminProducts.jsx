@@ -215,7 +215,7 @@ export default function AdminProducts() {
 
   // Helper to read draft or saved product properties
   const getProductDraft = (prod) => {
-    const defaultStock = prod.stock !== undefined ? prod.stock : 50;
+    const defaultStock = prod.stock !== undefined ? prod.stock : 0;
     const defaultStatus = prod.stockStatus || (defaultStock === 0 ? 'out_of_stock' : defaultStock <= 25 ? 'low_stock' : 'in_stock');
     if (drafts[prod.id]) {
       return {
@@ -236,7 +236,7 @@ export default function AdminProducts() {
     const draft = drafts[prod.id];
     if (!draft) return false;
 
-    const origStock = prod.stock !== undefined ? prod.stock : 50;
+    const origStock = prod.stock !== undefined ? prod.stock : 0;
     const origPrice = Number(prod.price);
     const origStatus = prod.stockStatus || (origStock === 0 ? 'out_of_stock' : origStock <= 25 ? 'low_stock' : 'in_stock');
 
@@ -465,9 +465,9 @@ export default function AdminProducts() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top-4 duration-200">
-          <div className="bg-stone-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-stone-700 flex items-center space-x-2.5 text-xs font-semibold">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300 pointer-events-none">
+          <div className="flex items-center space-x-1.5 text-sm font-semibold text-emerald-700 tracking-tight">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
             <span>{toastMessage}</span>
           </div>
         </div>
@@ -479,19 +479,35 @@ export default function AdminProducts() {
           <div>
             <h1 className="text-2xl font-black text-stone-900">Products & Inventory Control</h1>
             <p className="text-xs text-stone-500 mt-1">
-              Control live store inventory levels (default 50 pcs per product), mark items out of stock, and update pricing.
+              Control live store inventory levels, mark items out of stock, and update pricing.
             </p>
           </div>
 
-          <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2 pl-10 pr-4 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] focus:border-transparent transition-all"
-            />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                resetAllStockTo(0);
+                setDrafts({});
+                showToast('All product stocks set to 0 pcs (Out of Stock)!');
+              }}
+              className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-all flex items-center space-x-1.5 shadow-2xs cursor-pointer"
+              title="Set stock of all products to 0 pcs"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
+              <span>Set All Stock to 0</span>
+            </button>
+
+            <div className="relative w-full md:w-64">
+              <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-stone-50 border border-stone-200 rounded-xl py-2 pl-10 pr-4 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] focus:border-transparent transition-all"
+              />
+            </div>
           </div>
         </div>
 
@@ -802,7 +818,7 @@ export default function AdminProducts() {
                             value={draft.stock}
                             onChange={(e) => handleStockChange(prod, e.target.value)}
                             className={`w-14 rounded-lg py-1 px-1 text-center text-xs font-black text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                              modified && Number(draft.stock) !== Number(prod.stock !== undefined ? prod.stock : 50)
+                              modified && Number(draft.stock) !== Number(prod.stock !== undefined ? prod.stock : 0)
                                 ? 'bg-white border-2 border-amber-500 ring-2 ring-amber-200'
                                 : 'bg-stone-50 border border-stone-300'
                             }`}

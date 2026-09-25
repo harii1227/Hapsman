@@ -185,7 +185,7 @@ export function AdminProvider({ children }) {
     }
   };
 
-  // Product stock quantities stored in localStorage (defaulting to 50 pcs for each product)
+  // Product stock quantities stored in localStorage (defaulting to 0 pcs for each product)
   const [stockQuantities, setStockQuantities] = useState(() => {
     try {
       const saved = localStorage.getItem('hapsman_stock_quantities');
@@ -207,7 +207,7 @@ export function AdminProvider({ children }) {
 
   // Update product stock status
   const updateProductStock = (productId, newStockStatus) => {
-    let newQty = stockQuantities[productId] !== undefined ? stockQuantities[productId] : 50;
+    let newQty = stockQuantities[productId] !== undefined ? stockQuantities[productId] : 0;
     if (newStockStatus === 'out_of_stock') {
       newQty = 0;
     } else if (newStockStatus === 'low_stock') {
@@ -316,8 +316,8 @@ export function AdminProvider({ children }) {
     return { success: true, count: Object.keys(changesMap).length };
   };
 
-  // Bulk reset all products to specific pcs (default 50 pcs)
-  const resetAllStockTo = (qty = 50) => {
+  // Bulk reset all products to specific pcs (default 0 pcs)
+  const resetAllStockTo = (qty = 0) => {
     const newQuantities = {};
     const newOverrides = {};
     initialProducts.forEach(prod => {
@@ -374,10 +374,10 @@ export function AdminProvider({ children }) {
     };
   }, [orders, customers]);
 
-  // Merge initial products with quantities (default 50 pcs), custom prices, and status overrides
+  // Merge initial products with quantities (default 0 pcs), custom prices, and status overrides
   const productsWithStock = useMemo(() => {
     return initialProducts.map(prod => {
-      const qty = stockQuantities[prod.id] !== undefined ? stockQuantities[prod.id] : 50;
+      const qty = stockQuantities[prod.id] !== undefined ? stockQuantities[prod.id] : 0;
       const status = stockOverrides[prod.id] || (qty === 0 ? 'out_of_stock' : qty <= 25 ? 'low_stock' : 'in_stock');
       const customPrice = priceOverrides[prod.id] !== undefined ? priceOverrides[prod.id] : prod.price;
       return {
