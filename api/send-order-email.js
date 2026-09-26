@@ -47,7 +47,7 @@ export default async function handler(req, res) {
   const customerEmailHTML = `
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Order Confirmed</title></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>Order Confirmed</title></head>
 <body style="margin:0;padding:0;background:#faf7f2;font-family:'Helvetica Neue',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f2;padding:32px 0;">
     <tr><td align="center">
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 
         <!-- Header -->
         <tr>
-          <td style="background:linear-gradient(135deg,#1B4D3E 0%,#2d6b56 100%);border-radius:16px 16px 0 0;padding:28px 40px 24px;text-align:center;">
+          <td style="background-color:#1B4D3E;border-radius:16px 16px 0 0;padding:28px 40px 24px;text-align:center;">
             <img src="${logoUrl}" alt="NaturaGro Harvest" width="90" height="90" style="display:block;margin:0 auto 14px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);object-fit:cover;" />
             <p style="margin:0 0 4px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#a7d9c6;font-weight:600;">NaturaGro Harvest</p>
             <h1 style="margin:0;font-size:26px;color:#ffffff;font-weight:800;letter-spacing:-0.5px;">🌿 Order Confirmed!</h1>
@@ -146,7 +146,7 @@ export default async function handler(req, res) {
   const adminEmailHTML = `
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>New Order Received</title></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>New Order Received</title></head>
 <body style="margin:0;padding:0;background:#f4f4f4;font-family:'Helvetica Neue',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:32px 0;">
     <tr><td align="center">
@@ -154,7 +154,7 @@ export default async function handler(req, res) {
 
         <!-- Header -->
         <tr>
-          <td style="background:linear-gradient(135deg,#b45309 0%,#d97706 100%);border-radius:16px 16px 0 0;padding:24px 40px 22px;text-align:center;">
+          <td style="background-color:#b45309;border-radius:16px 16px 0 0;padding:24px 40px 22px;text-align:center;">
             <img src="${logoUrl}" alt="NaturaGro Harvest" width="72" height="72" style="display:block;margin:0 auto 12px;border-radius:50%;border:3px solid rgba(255,255,255,0.25);object-fit:cover;" />
             <p style="margin:0 0 4px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#fde68a;font-weight:600;">Admin Alert — NaturaGro Harvest</p>
             <h1 style="margin:0;font-size:24px;color:#ffffff;font-weight:800;">🛒 New Order Received!</h1>
