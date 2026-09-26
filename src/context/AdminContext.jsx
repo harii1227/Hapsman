@@ -21,15 +21,8 @@ export function AdminProvider({ children }) {
   const [profiles, setProfiles] = useState([]);
   const [loadingProfiles, setLoadingProfiles] = useState(true);
   
-  // Product stock overrides stored in localStorage for immediate reflection
-  const [stockOverrides, setStockOverrides] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hapsman_stock_overrides');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  // Product stock overrides from Supabase
+  const [stockOverrides, setStockOverrides] = useState({});
 
   // Fetch all orders from Supabase
   const fetchAllOrders = useCallback(async () => {
@@ -185,25 +178,47 @@ export function AdminProvider({ children }) {
     }
   };
 
-  // Product stock quantities stored in localStorage (defaulting to 0 pcs for each product)
-  const [stockQuantities, setStockQuantities] = useState(() => {
-    try {
-      const saved = localStorage.getItem('hapsman_stock_quantities');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  // Product stock quantities and price overrides
+  const [stockQuantities, setStockQuantities] = useState({});
+  const [priceOverrides, setPriceOverrides] = useState({});
 
-  // Product price overrides stored in localStorage so admin can change prices live
-  const [priceOverrides, setPriceOverrides] = useState(() => {
+  // Fetch product stock and prices from Supabase
+  const fetchProductStock = useCallback(async () => {
     try {
-      const saved = localStorage.getItem('hapsman_price_overrides');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
+      const { data, error } = await supabase
+        .from('product_stock')
+        .select('*');
+      
+      if (error) {
+        console.error('Error fetching product stock:', error.message);
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        const newStockQuantities = {};
+        const newStockOverrides = {};
+        const newPriceOverrides = {};
+        
+        data.forEach(item => {
+          newStockQuantities[item.product_id] = item.stock;
+          newStockOverrides[item.product_id] = item.stock_status;
+          if (item.price_override !== null && item.price_override !== undefined) {
+            newPriceOverrides[item.product_id] = item.price_override;
+          }
+        });
+        
+        setStockQuantities(newStockQuantities);
+        setStockOverrides(newStockOverrides);
+        setPriceOverrides(newPriceOverrides);
+      }
+    } catch (err) {
+      console.error('Failed to fetch product stock:', err);
     }
-  });
+  }, []);
+
+  useEffect(() => {
+    fetchProductStock();
+  }, [fetchProductStock]);
 
   // Update product stock status
   const updateProductStock = (productId, newStockStatus) => {
@@ -267,67 +282,91 @@ export function AdminProvider({ children }) {
 
   // Save changes explicitly (used when admin clicks Save button)
   // changesMap: { [productId]: { price?: number|string, stock?: number|string, stockStatus?: string } }
-  const saveProductChanges = (changesMap) => {
+  const saveProductChanges = async (changesMap) => {
     if (!changesMap || Object.keys(changesMap).length === 0) return { success: true };
 
     const updatedPrices = { ...priceOverrides };
     const updatedQuantities = { ...stockQuantities };
     const updatedStatuses = { ...stockOverrides };
 
-    let priceChanged = false;
-    let stockChanged = false;
-    let statusChanged = false;
-
     Object.entries(changesMap).forEach(([id, change]) => {
       if (change.price !== undefined && change.price !== '') {
         const p = Math.max(0, parseFloat(change.price) || 0);
         updatedPrices[id] = p;
-        priceChanged = true;
       }
       if (change.stock !== undefined && change.stock !== '') {
         const q = Math.max(0, parseInt(change.stock, 10) || 0);
         updatedQuantities[id] = q;
-        stockChanged = true;
         if (!change.stockStatus) {
           updatedStatuses[id] = q === 0 ? 'out_of_stock' : q <= 25 ? 'low_stock' : 'in_stock';
-          statusChanged = true;
         }
       }
       if (change.stockStatus !== undefined) {
         updatedStatuses[id] = change.stockStatus;
-        statusChanged = true;
       }
     });
 
-    if (priceChanged) {
-      setPriceOverrides(updatedPrices);
-      localStorage.setItem('hapsman_price_overrides', JSON.stringify(updatedPrices));
-    }
-    if (stockChanged) {
-      setStockQuantities(updatedQuantities);
-      localStorage.setItem('hapsman_stock_quantities', JSON.stringify(updatedQuantities));
-    }
-    if (statusChanged) {
-      setStockOverrides(updatedStatuses);
-      localStorage.setItem('hapsman_stock_overrides', JSON.stringify(updatedStatuses));
+    // Optimistic UI update: Update local state immediately so it feels instant
+    setPriceOverrides(updatedPrices);
+    setStockQuantities(updatedQuantities);
+    setStockOverrides(updatedStatuses);
+    window.dispatchEvent(new Event('hapsman_catalog_updated'));
+
+    // Save to Supabase in the background
+    const upsertData = Object.entries(changesMap).map(([id, change]) => {
+        return {
+           product_id: id,
+           stock: updatedQuantities[id] !== undefined ? updatedQuantities[id] : 0,
+           price_override: updatedPrices[id] !== undefined ? updatedPrices[id] : null,
+           stock_status: updatedStatuses[id] || 'in_stock',
+           updated_at: new Date().toISOString()
+        };
+    });
+
+    try {
+      const { error } = await supabase
+        .from('product_stock')
+        .upsert(upsertData, { onConflict: 'product_id' });
+        
+      if (error) {
+        console.error('Supabase upsert error:', error.message);
+        // Note: In a production app, you might want to revert the state here if it fails
+      }
+    } catch(err) {
+      console.error(err);
     }
 
-    window.dispatchEvent(new Event('hapsman_catalog_updated'));
     return { success: true, count: Object.keys(changesMap).length };
   };
 
   // Bulk reset all products to specific pcs (default 0 pcs)
-  const resetAllStockTo = (qty = 0) => {
+  const resetAllStockTo = async (qty = 0) => {
     const newQuantities = {};
     const newOverrides = {};
-    initialProducts.forEach(prod => {
+    const upsertData = initialProducts.map(prod => {
       newQuantities[prod.id] = qty;
       newOverrides[prod.id] = qty === 0 ? 'out_of_stock' : qty <= 25 ? 'low_stock' : 'in_stock';
+      return {
+        product_id: prod.id,
+        stock: qty,
+        price_override: priceOverrides[prod.id] !== undefined ? priceOverrides[prod.id] : null,
+        stock_status: newOverrides[prod.id],
+        updated_at: new Date().toISOString()
+      };
     });
+
+    try {
+      const { error } = await supabase
+        .from('product_stock')
+        .upsert(upsertData, { onConflict: 'product_id' });
+        
+      if (error) console.error('Supabase reset error:', error.message);
+    } catch(err) {
+      console.error(err);
+    }
+
     setStockQuantities(newQuantities);
     setStockOverrides(newOverrides);
-    localStorage.setItem('hapsman_stock_quantities', JSON.stringify(newQuantities));
-    localStorage.setItem('hapsman_stock_overrides', JSON.stringify(newOverrides));
     window.dispatchEvent(new Event('hapsman_catalog_updated'));
   };
 
@@ -390,12 +429,39 @@ export function AdminProvider({ children }) {
     });
   }, [stockOverrides, stockQuantities, priceOverrides]);
 
-  // Live Coupons Management
+  // Live Coupons Management (Supabase backed)
   const [coupons, setCoupons] = useState(() => {
-    return getLiveCoupons();
+    return getLiveCoupons(); // Fallback initial
   });
 
-  const createCoupon = ({ code, percentage, minOrder, title, subtitle }) => {
+  const fetchCoupons = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('coupons')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching coupons:', error.message);
+        return;
+      }
+      
+      if (data) {
+        setCoupons(data);
+        try {
+          localStorage.setItem('hapsman_admin_coupons', JSON.stringify(data));
+        } catch (e) {}
+      }
+    } catch (err) {
+      console.error('Failed to fetch coupons:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCoupons();
+  }, [fetchCoupons]);
+
+  const createCoupon = async ({ code, percentage, minOrder, title, subtitle, showOnMainSite = true }) => {
     const cleanCode = code?.trim().toUpperCase();
     if (!cleanCode) return { success: false, message: 'Coupon code is required.' };
     const pct = Math.max(1, Math.min(100, parseInt(percentage, 10) || 10));
@@ -414,10 +480,12 @@ export function AdminProvider({ children }) {
       category: 'Store Offer',
       validUntil: 'Active Offer',
       isActive: true,
+      showOnMainSite: showOnMainSite,
       isCustom: true,
       created_at: new Date().toISOString()
     };
 
+    // Optimistic update
     const updated = [newCoupon, ...coupons.filter(c => c.code !== cleanCode)];
     setCoupons(updated);
 
@@ -427,13 +495,29 @@ export function AdminProvider({ children }) {
       console.error('Error saving coupon to localStorage:', e);
     }
 
+    // Save to Supabase
+    try {
+      const { error } = await supabase
+        .from('coupons')
+        .insert([newCoupon]);
+        
+      if (error) console.error('Supabase coupon insert error:', error.message);
+    } catch(err) {
+      console.error(err);
+    }
+
     return { success: true, coupon: newCoupon };
   };
 
-  const toggleCouponActive = (couponId) => {
+  const toggleCouponActive = async (couponId) => {
+    const couponToUpdate = coupons.find(c => c.id === couponId || c.code === couponId);
+    if (!couponToUpdate) return;
+    const newStatus = couponToUpdate.isActive === false ? true : false;
+
+    // Optimistic update
     const updated = coupons.map(c => {
       if (c.id === couponId || c.code === couponId) {
-        return { ...c, isActive: c.isActive === false ? true : false };
+        return { ...c, isActive: newStatus };
       }
       return c;
     });
@@ -443,15 +527,38 @@ export function AdminProvider({ children }) {
     } catch {
       // Ignore
     }
+
+    // Update Supabase
+    try {
+      await supabase
+        .from('coupons')
+        .update({ isActive: newStatus })
+        .eq('id', couponToUpdate.id);
+    } catch(err) {
+      console.error(err);
+    }
   };
 
-  const deleteCoupon = (couponId) => {
+  const deleteCoupon = async (couponId) => {
+    const couponToDelete = coupons.find(c => c.id === couponId || c.code === couponId);
+    if (!couponToDelete) return;
+
     const updated = coupons.filter(c => c.id !== couponId && c.code !== couponId);
     setCoupons(updated);
     try {
       localStorage.setItem('hapsman_admin_coupons', JSON.stringify(updated));
     } catch {
       // Ignore
+    }
+
+    // Delete from Supabase
+    try {
+      await supabase
+        .from('coupons')
+        .delete()
+        .eq('id', couponToDelete.id);
+    } catch(err) {
+      console.error(err);
     }
   };
 

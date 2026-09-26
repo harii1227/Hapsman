@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { customer, cartItems, orderId, paymentMethod, subtotal, discount, shipping, total, origin } = req.body;
+  const { customer, cartItems, orderId, paymentMethod, subtotal, discount, shipping, total, origin, appliedCoupon } = req.body;
 
   if (!customer || !cartItems || !orderId) {
     return res.status(400).json({ message: 'Missing required order data' });
@@ -97,7 +97,7 @@ export default async function handler(req, res) {
                 <td style="padding:8px 12px;font-size:13px;color:#666;">Subtotal</td>
                 <td style="padding:8px 12px;font-size:13px;color:#333;text-align:right;font-weight:600;">₹${subtotal}</td>
               </tr>
-              ${discount > 0 ? `<tr><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;">Discount</td><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;text-align:right;font-weight:600;">- ₹${discount}</td></tr>` : ''}
+              ${discount > 0 ? `<tr><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;">Discount ${appliedCoupon ? `<span style="font-size:10px;background:#e8f5ee;padding:2px 6px;border-radius:4px;border:1px solid #b2ddc8;margin-left:6px;">${appliedCoupon}</span>` : ''}</td><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;text-align:right;font-weight:600;">- ₹${discount}</td></tr>` : ''}
               <tr>
                 <td style="padding:8px 12px;font-size:13px;color:#666;">Shipping</td>
                 <td style="padding:8px 12px;font-size:13px;color:#333;text-align:right;font-weight:600;">${shipping === 0 ? 'FREE' : '₹' + shipping}</td>
@@ -211,7 +211,7 @@ export default async function handler(req, res) {
                 <td style="padding:8px 12px;font-size:13px;color:#666;">Subtotal</td>
                 <td style="padding:8px 12px;font-size:13px;color:#333;text-align:right;font-weight:600;">₹${subtotal}</td>
               </tr>
-              ${discount > 0 ? `<tr><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;">Discount Applied</td><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;text-align:right;font-weight:600;">- ₹${discount}</td></tr>` : ''}
+              ${discount > 0 ? `<tr><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;">Discount Applied ${appliedCoupon ? `<span style="font-size:10px;background:#e8f5ee;padding:2px 6px;border-radius:4px;border:1px solid #b2ddc8;margin-left:6px;color:#1B4D3E;">${appliedCoupon}</span>` : ''}</td><td style="padding:8px 12px;font-size:13px;color:#2d9e5f;text-align:right;font-weight:600;">- ₹${discount}</td></tr>` : ''}
               <tr>
                 <td style="padding:8px 12px;font-size:13px;color:#666;">Shipping</td>
                 <td style="padding:8px 12px;font-size:13px;color:#333;text-align:right;font-weight:600;">${shipping === 0 ? 'FREE' : '₹' + shipping}</td>

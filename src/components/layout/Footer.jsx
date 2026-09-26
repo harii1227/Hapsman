@@ -133,9 +133,6 @@ export default function Footer() {
             <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="p-1.5 bg-emerald-900/60 rounded-full hover:text-amber-300 hover:bg-emerald-800 transition-colors">
               <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z"/></svg>
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="p-1.5 bg-emerald-900/60 rounded-full hover:text-amber-300 hover:bg-emerald-800 transition-colors">
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-            </a>
           </div>
         </div>
 

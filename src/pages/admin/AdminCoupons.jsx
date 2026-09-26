@@ -20,6 +20,7 @@ export default function AdminCoupons() {
   const [percentage, setPercentage] = useState('15');
   const [minOrder, setMinOrder] = useState('499');
   const [title, setTitle] = useState('');
+  const [showOnMainSite, setShowOnMainSite] = useState(true);
   const [copiedCode, setCopiedCode] = useState(null);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -39,7 +40,8 @@ export default function AdminCoupons() {
       code,
       percentage,
       minOrder,
-      title
+      title,
+      showOnMainSite
     });
 
     if (res.success) {
@@ -48,6 +50,7 @@ export default function AdminCoupons() {
       setTitle('');
       setPercentage('15');
       setMinOrder('499');
+      setShowOnMainSite(true);
       setTimeout(() => setSuccessMsg(''), 4000);
     } else {
       setErrorMsg(res.message || 'Failed to create coupon.');
@@ -208,6 +211,31 @@ export default function AdminCoupons() {
               />
             </div>
 
+            {/* Show on Main Site Toggle */}
+            <div className="flex items-center justify-between p-3 bg-stone-50 border border-stone-200 rounded-xl mt-4">
+              <div>
+                <label className="block text-xs font-bold text-stone-900">
+                  Show on Main Site
+                </label>
+                <span className="text-[10px] text-stone-500">
+                  If off, this will be a hidden/private coupon.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowOnMainSite(!showOnMainSite)}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  showOnMainSite ? 'bg-emerald-600' : 'bg-stone-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    showOnMainSite ? 'translate-x-4' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+
             <button
               type="submit"
               className="w-full py-3 px-4 rounded-xl bg-[#1B4D3E] hover:bg-[#143d31] text-amber-200 font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center space-x-2"
@@ -285,6 +313,11 @@ export default function AdminCoupons() {
                           >
                             {isActive ? 'Active' : 'Disabled'}
                           </span>
+                          {c.showOnMainSite === false && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-300">
+                              Hidden
+                            </span>
+                          )}
                         </div>
 
                         <p className="text-xs font-semibold text-stone-800">

@@ -699,8 +699,8 @@ export default function AdminProducts() {
 
       {/* Products Table */}
       <div className="bg-white rounded-3xl border border-stone-200/80 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-stone-600">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full text-left text-sm text-stone-600 min-w-[800px]">
             <thead className="bg-stone-50 text-[11px] uppercase font-bold text-stone-500 border-b border-stone-200">
               <tr>
                 <th className="px-4 py-4 text-center w-12 text-stone-400 font-black">#</th>

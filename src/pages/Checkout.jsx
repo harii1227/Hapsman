@@ -133,6 +133,7 @@ export default function Checkout() {
             discount: getDiscountAmount(),
             shipping: getShippingFee(),
             total: getTotal(),
+            appliedCoupon: appliedCoupon ? appliedCoupon.code : null,
             origin: window.location.origin,
           }),
         });

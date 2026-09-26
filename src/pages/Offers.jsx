@@ -10,7 +10,7 @@ export default function Offers() {
   const { applyCoupon, setIsCartOpen } = useCart();
   const navigate = useNavigate();
 
-  const activeOffers = getLiveCoupons().filter(o => o.isActive !== false);
+  const activeOffers = getLiveCoupons().filter(o => o.isActive !== false && o.showOnMainSite !== false);
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(code);
@@ -63,17 +63,95 @@ export default function Offers() {
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+        ) : activeOffers.length === 1 ? (
+          <div className="max-w-4xl mx-auto my-12">
+            {activeOffers.map((offer) => (
+              <div
+                key={offer.id || offer.code}
+                className={`rounded-3xl sm:rounded-[2rem] p-6 sm:p-10 text-white bg-gradient-to-r ${offer.bgGradient || 'from-[#0F2C23] via-[#1B4D3E] to-[#12352B]'} shadow-2xl border border-amber-500/20 flex flex-col md:flex-row items-center justify-between relative overflow-hidden group`}
+              >
+                {/* Background watermark icon */}
+                <Tag className="w-48 h-48 sm:w-64 sm:h-64 text-white/5 absolute -right-6 -bottom-6 sm:-right-10 sm:-bottom-10 transform rotate-12 pointer-events-none" />
+
+                <div className="flex-1 text-center md:text-left space-y-3 sm:space-y-4 mb-6 sm:mb-8 md:mb-0 relative z-10">
+                  <div className="inline-flex items-center space-x-2 px-3 py-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 mb-1 sm:mb-2">
+                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" />
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-amber-100">
+                      {offer.category || 'Exclusive Store Offer'}
+                    </span>
+                  </div>
+
+                  <h2 className="text-4xl sm:text-5xl font-black text-amber-300 tracking-tight leading-none">
+                    {offer.discount || `${offer.percentage || offer.discountValue}% OFF`}
+                  </h2>
+
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                    {offer.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-stone-200/90 leading-relaxed max-w-md mx-auto md:mx-0">
+                    {offer.subtitle}
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start space-y-2 sm:space-y-0 sm:space-x-2 pt-2 sm:pt-4 opacity-80">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] sm:text-xs font-bold">1</span>
+                      <span className="text-[11px] sm:text-xs text-stone-200 font-medium tracking-wide">Copy code</span>
+                    </div>
+                    <ArrowRight className="hidden sm:block w-3 h-3 text-stone-400" />
+                    <div className="flex items-center space-x-2">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] sm:text-xs font-bold">2</span>
+                      <span className="text-[11px] sm:text-xs text-stone-200 font-medium tracking-wide">Apply at Checkout</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full md:w-80 shrink-0 bg-black/20 sm:bg-black/30 backdrop-blur-md p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/10 relative z-10 flex flex-col items-center">
+                  <div className="text-[10px] text-stone-300 uppercase tracking-widest font-bold mb-3">Your Promo Code</div>
+                  <div className="flex items-center justify-between bg-white/10 w-full p-4 rounded-xl border border-white/20 mb-4 group-hover:border-amber-400/50 transition-colors">
+                    <span className="font-mono font-black text-xl tracking-widest text-amber-300">
+                      {offer.code}
+                    </span>
+
+                    <button
+                      onClick={() => handleCopy(offer.code)}
+                      className="p-2 hover:bg-white/20 rounded-lg transition-all text-xs font-bold flex items-center space-x-1"
+                    >
+                      {copiedCode === offer.code ? (
+                        <>
+                          <Check className="w-4 h-4 text-emerald-400" />
+                          <span className="text-emerald-400">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 text-white" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => handleApplyDirectly(offer)}
+                    className="w-full py-4 bg-amber-400 text-[#0F2C23] font-black text-sm uppercase tracking-wider rounded-xl hover:bg-amber-300 transition-all shadow-lg hover:shadow-amber-400/30 flex items-center justify-center space-x-2"
+                  >
+                    <span>Apply Code to Cart</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-10 max-w-6xl mx-auto">
             {activeOffers.map((offer) => (
               <div
                 key={offer.id || offer.code}
                 className={`rounded-3xl p-6 text-white bg-gradient-to-br ${offer.bgGradient || 'from-[#1B4D3E] to-[#0F2A22]'} shadow-xl border border-amber-500/20 flex flex-col justify-between relative overflow-hidden group`}
               >
                 {/* Background watermark icon */}
-                <Tag className="w-32 h-32 text-white/5 absolute -right-6 -bottom-6 transform rotate-12" />
+                <Tag className="w-32 h-32 text-white/5 absolute -right-6 -bottom-6 transform rotate-12 pointer-events-none" />
 
-                <div>
+                <div className="relative z-10">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 bg-white/20 rounded-md backdrop-blur-xs">
                       {offer.category || 'Store Offer'}
@@ -94,7 +172,7 @@ export default function Offers() {
                   </p>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-white/10 space-y-3">
+                <div className="mt-8 pt-4 border-t border-white/10 space-y-3 relative z-10">
                   <div className="flex items-center justify-between bg-black/40 p-2.5 rounded-xl border border-white/10">
                     <span className="font-mono font-bold text-sm tracking-wider text-amber-300">
                       {offer.code}
