@@ -1,11 +1,68 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import ProductCard from '../components/products/ProductCard';
 import QuickViewModal from '../components/products/QuickViewModal';
 import Breadcrumb from '../components/common/Breadcrumb';
 import { categories } from '../data/categories';
 import { useAdmin } from '../context/AdminContext';
-import { SlidersHorizontal, Search, X, Check } from 'lucide-react';
+import { SlidersHorizontal, Search, X, Check, ChevronDown } from 'lucide-react';
+
+function CustomSortDropdown({ value, onChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const options = [
+    { id: 'popularity', label: 'Popularity / Best Selling' },
+    { id: 'price-low', label: 'Price: Low to High' },
+    { id: 'price-high', label: 'Price: High to Low' },
+    { id: 'rating', label: 'Top Rated' }
+  ];
+
+  const selectedOption = options.find(o => o.id === value) || options[0];
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between min-w-[170px] space-x-2 border border-stone-300 bg-white text-xs font-semibold rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/20 transition-all hover:bg-stone-50 cursor-pointer shadow-2xs"
+      >
+        <span>{selectedOption.label}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-stone-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-52 bg-white border border-stone-200 rounded-xl shadow-2xl z-50 py-1.5 animate-in fade-in zoom-in-95">
+          {options.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => {
+                onChange(opt.id);
+                setIsOpen(false);
+              }}
+              className={`w-full text-left px-3 py-2.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                opt.id === value ? 'bg-stone-100/80 font-bold text-[#1B4D3E]' : 'text-stone-700 font-medium hover:bg-stone-50'
+              }`}
+            >
+              <span>{opt.label}</span>
+              {opt.id === value && <Check className="w-3.5 h-3.5 text-[#1B4D3E]" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Products() {
   const { categorySlug } = useParams();
@@ -157,16 +214,7 @@ export default function Products() {
           <div className="flex items-center space-x-2 w-full md:w-auto justify-end">
             <SlidersHorizontal className="w-4 h-4 text-stone-500" />
             <span className="text-xs font-semibold text-stone-600">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="border border-stone-300 bg-white text-xs font-semibold rounded-xl px-3 py-2 text-stone-800 focus:outline-none focus:border-[#1B4D3E]"
-            >
-              <option value="popularity">Popularity / Best Selling</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Top Rated</option>
-            </select>
+            <CustomSortDropdown value={sortBy} onChange={setSortBy} />
           </div>
         </div>
 

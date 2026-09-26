@@ -22,7 +22,12 @@ export function AdminProvider({ children }) {
   const [loadingProfiles, setLoadingProfiles] = useState(true);
   
   // Product stock overrides from Supabase
-  const [stockOverrides, setStockOverrides] = useState({});
+  const [stockOverrides, setStockOverrides] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hapsman_stock_overrides');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
 
   // Fetch all orders from Supabase
   const fetchAllOrders = useCallback(async () => {
@@ -118,7 +123,8 @@ export function AdminProvider({ children }) {
         ordersCount: 0,
         totalSpent: 0,
         lastOrderDate: p.last_login || p.created_at,
-        city: 'N/A'
+        city: 'N/A',
+        savedAddresses: p.meta_data?.saved_addresses || []
       });
     });
 
@@ -131,11 +137,12 @@ export function AdminProvider({ children }) {
         id: order.user_id || key,
         name: order.shipping_name || 'Customer',
         email: userProfile?.email || order.user_email || 'N/A',
-        phone: order.shipping_phone || 'N/A',
+        phone: userProfile?.phone || order.shipping_phone || 'N/A',
         ordersCount: 0,
         totalSpent: 0,
         lastOrderDate: order.created_at,
-        city: order.shipping_city || 'N/A'
+        city: order.shipping_city || 'N/A',
+        savedAddresses: userProfile?.meta_data?.saved_addresses || []
       };
 
       existing.ordersCount += 1;
@@ -179,8 +186,50 @@ export function AdminProvider({ children }) {
   };
 
   // Product stock quantities and price overrides
-  const [stockQuantities, setStockQuantities] = useState({});
-  const [priceOverrides, setPriceOverrides] = useState({});
+  const [stockQuantities, setStockQuantities] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hapsman_stock_quantities');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  
+  const [priceOverrides, setPriceOverrides] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hapsman_price_overrides');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  const [originalPriceOverrides, setOriginalPriceOverrides] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hapsman_original_price_overrides');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  const [badgeOverrides, setBadgeOverrides] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hapsman_badge_overrides');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  const [nameOverrides, setNameOverrides] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hapsman_name_overrides');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  const [categoryOverrides, setCategoryOverrides] = useState(() => {
+    try {
+      const saved = localStorage.getItem('hapsman_category_overrides');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+  
+  // Notice we use the existing stockOverrides initialization from before (wait, let's just initialize it here)
+
 
   // Fetch product stock and prices from Supabase
   const fetchProductStock = useCallback(async () => {
@@ -198,6 +247,10 @@ export function AdminProvider({ children }) {
         const newStockQuantities = {};
         const newStockOverrides = {};
         const newPriceOverrides = {};
+        const newOriginalPriceOverrides = {};
+        const newBadgeOverrides = {};
+        const newNameOverrides = {};
+        const newCategoryOverrides = {};
         
         data.forEach(item => {
           newStockQuantities[item.product_id] = item.stock;
@@ -205,11 +258,37 @@ export function AdminProvider({ children }) {
           if (item.price_override !== null && item.price_override !== undefined) {
             newPriceOverrides[item.product_id] = item.price_override;
           }
+          if (item.original_price_override !== null && item.original_price_override !== undefined) {
+            newOriginalPriceOverrides[item.product_id] = item.original_price_override;
+          }
+          if (item.badge_override !== null && item.badge_override !== undefined) {
+            newBadgeOverrides[item.product_id] = item.badge_override;
+          }
+          if (item.name_override !== null && item.name_override !== undefined) {
+            newNameOverrides[item.product_id] = item.name_override;
+          }
+          if (item.category_override !== null && item.category_override !== undefined) {
+            newCategoryOverrides[item.product_id] = item.category_override;
+          }
         });
         
         setStockQuantities(newStockQuantities);
         setStockOverrides(newStockOverrides);
         setPriceOverrides(newPriceOverrides);
+        setOriginalPriceOverrides(newOriginalPriceOverrides);
+        setBadgeOverrides(newBadgeOverrides);
+        setNameOverrides(newNameOverrides);
+        setCategoryOverrides(newCategoryOverrides);
+        
+        try {
+          localStorage.setItem('hapsman_stock_quantities', JSON.stringify(newStockQuantities));
+          localStorage.setItem('hapsman_stock_overrides', JSON.stringify(newStockOverrides));
+          localStorage.setItem('hapsman_price_overrides', JSON.stringify(newPriceOverrides));
+          localStorage.setItem('hapsman_original_price_overrides', JSON.stringify(newOriginalPriceOverrides));
+          localStorage.setItem('hapsman_badge_overrides', JSON.stringify(newBadgeOverrides));
+          localStorage.setItem('hapsman_name_overrides', JSON.stringify(newNameOverrides));
+          localStorage.setItem('hapsman_category_overrides', JSON.stringify(newCategoryOverrides));
+        } catch(e) {}
       }
     } catch (err) {
       console.error('Failed to fetch product stock:', err);
@@ -286,13 +365,30 @@ export function AdminProvider({ children }) {
     if (!changesMap || Object.keys(changesMap).length === 0) return { success: true };
 
     const updatedPrices = { ...priceOverrides };
+    const updatedOriginalPrices = { ...originalPriceOverrides };
     const updatedQuantities = { ...stockQuantities };
     const updatedStatuses = { ...stockOverrides };
+    const updatedBadges = { ...badgeOverrides };
+    const updatedNames = { ...nameOverrides };
+    const updatedCategories = { ...categoryOverrides };
 
     Object.entries(changesMap).forEach(([id, change]) => {
       if (change.price !== undefined && change.price !== '') {
         const p = Math.max(0, parseFloat(change.price) || 0);
         updatedPrices[id] = p;
+      }
+      if (change.originalPrice !== undefined && change.originalPrice !== '') {
+        const op = Math.max(0, parseFloat(change.originalPrice) || 0);
+        updatedOriginalPrices[id] = op;
+      }
+      if (change.badge !== undefined) {
+        updatedBadges[id] = change.badge;
+      }
+      if (change.name !== undefined) {
+        updatedNames[id] = change.name;
+      }
+      if (change.category !== undefined) {
+        updatedCategories[id] = change.category;
       }
       if (change.stock !== undefined && change.stock !== '') {
         const q = Math.max(0, parseInt(change.stock, 10) || 0);
@@ -308,8 +404,23 @@ export function AdminProvider({ children }) {
 
     // Optimistic UI update: Update local state immediately so it feels instant
     setPriceOverrides(updatedPrices);
+    setOriginalPriceOverrides(updatedOriginalPrices);
     setStockQuantities(updatedQuantities);
     setStockOverrides(updatedStatuses);
+    setBadgeOverrides(updatedBadges);
+    setNameOverrides(updatedNames);
+    setCategoryOverrides(updatedCategories);
+    
+    try {
+      localStorage.setItem('hapsman_stock_quantities', JSON.stringify(updatedQuantities));
+      localStorage.setItem('hapsman_stock_overrides', JSON.stringify(updatedStatuses));
+      localStorage.setItem('hapsman_price_overrides', JSON.stringify(updatedPrices));
+      localStorage.setItem('hapsman_original_price_overrides', JSON.stringify(updatedOriginalPrices));
+      localStorage.setItem('hapsman_badge_overrides', JSON.stringify(updatedBadges));
+      localStorage.setItem('hapsman_name_overrides', JSON.stringify(updatedNames));
+      localStorage.setItem('hapsman_category_overrides', JSON.stringify(updatedCategories));
+    } catch(e) {}
+    
     window.dispatchEvent(new Event('hapsman_catalog_updated'));
 
     // Save to Supabase in the background
@@ -318,6 +429,10 @@ export function AdminProvider({ children }) {
            product_id: id,
            stock: updatedQuantities[id] !== undefined ? updatedQuantities[id] : 0,
            price_override: updatedPrices[id] !== undefined ? updatedPrices[id] : null,
+           original_price_override: updatedOriginalPrices[id] !== undefined ? updatedOriginalPrices[id] : null,
+           badge_override: updatedBadges[id] !== undefined ? updatedBadges[id] : null,
+           name_override: updatedNames[id] !== undefined ? updatedNames[id] : null,
+           category_override: updatedCategories[id] !== undefined ? updatedCategories[id] : null,
            stock_status: updatedStatuses[id] || 'in_stock',
            updated_at: new Date().toISOString()
         };
@@ -419,15 +534,34 @@ export function AdminProvider({ children }) {
       const qty = stockQuantities[prod.id] !== undefined ? stockQuantities[prod.id] : 0;
       const status = stockOverrides[prod.id] || (qty === 0 ? 'out_of_stock' : qty <= 25 ? 'low_stock' : 'in_stock');
       const customPrice = priceOverrides[prod.id] !== undefined ? priceOverrides[prod.id] : prod.price;
+      const customOriginalPrice = originalPriceOverrides[prod.id] !== undefined ? originalPriceOverrides[prod.id] : prod.originalPrice;
+      const customBadge = badgeOverrides[prod.id] !== undefined ? badgeOverrides[prod.id] : prod.badge;
+      const customName = nameOverrides[prod.id] !== undefined ? nameOverrides[prod.id] : prod.name;
+      const customCategory = categoryOverrides[prod.id] !== undefined ? categoryOverrides[prod.id] : prod.category;
+      
+      let calculatedDiscount = null;
+      if (customOriginalPrice && customPrice !== undefined && customOriginalPrice > customPrice) {
+        const diff = customOriginalPrice - customPrice;
+        const pct = Math.round((diff / customOriginalPrice) * 100);
+        if (pct > 0) {
+          calculatedDiscount = `${pct}% OFF`;
+        }
+      }
+      
       return {
         ...prod,
+        name: customName,
+        category: customCategory,
         price: customPrice,
+        originalPrice: customOriginalPrice,
+        badge: customBadge,
+        discount: calculatedDiscount,
         stock: qty,
         stockQuantity: qty,
         stockStatus: status
       };
     });
-  }, [stockOverrides, stockQuantities, priceOverrides]);
+  }, [stockOverrides, stockQuantities, priceOverrides, originalPriceOverrides, badgeOverrides, nameOverrides, categoryOverrides]);
 
   // Live Coupons Management (Supabase backed)
   const [coupons, setCoupons] = useState(() => {

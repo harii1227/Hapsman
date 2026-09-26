@@ -173,17 +173,45 @@ export default function AdminCustomers() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
-                  Customer Orders ({customerOrders.length})
-                </h4>
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                  Lifetime Spent: ₹{selectedCustomer.totalSpent.toLocaleString('en-IN')}
-                </span>
-              </div>
+            <div className="p-6 overflow-y-auto space-y-8">
+              {/* Saved Addresses Section */}
+              {selectedCustomer.savedAddresses && selectedCustomer.savedAddresses.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                    Saved Addresses ({selectedCustomer.savedAddresses.length})
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {selectedCustomer.savedAddresses.map((addr, idx) => (
+                      <div key={idx} className="p-3 bg-stone-50 border border-stone-200 rounded-xl relative">
+                        {addr.isDefault && (
+                          <span className="absolute top-2 right-2 bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.5 rounded-sm uppercase tracking-wider border border-emerald-200">
+                            Default
+                          </span>
+                        )}
+                        <h5 className="font-bold text-stone-900 text-xs">{addr.name}</h5>
+                        <p className="text-[10px] text-stone-500 mt-0.5">{addr.phone}</p>
+                        <p className="text-[11px] text-stone-700 mt-1.5 leading-tight">
+                          {addr.addressLine1} {addr.addressLine2 && `, ${addr.addressLine2}`}
+                          <br />
+                          {addr.city}, {addr.state} - {addr.pincode}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
+              {/* Order History Section */}
               <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                    Customer Orders ({customerOrders.length})
+                  </h4>
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    Lifetime Spent: ₹{selectedCustomer.totalSpent.toLocaleString('en-IN')}
+                  </span>
+                </div>
+
                 {customerOrders.length === 0 ? (
                   <p className="text-xs text-stone-400 text-center py-6">
                     No orders linked directly to this customer record.

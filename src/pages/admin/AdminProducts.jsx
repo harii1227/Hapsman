@@ -205,6 +205,28 @@ export default function AdminProducts() {
   const [priceRangeFilter, setPriceRangeFilter] = useState('all'); // 'all' | 'under_100' | '100_300' | '300_500' | 'above_500'
   const [priceSort, setPriceSort] = useState('default'); // 'default' | 'asc' | 'desc'
 
+  // Column resizing state
+  const [colWidths, setColWidths] = useState({ info: 320, price: 180, qty: 150, status: 160 });
+
+  const startResize = (e, col) => {
+    e.preventDefault();
+    const startX = e.pageX;
+    const startWidth = colWidths[col];
+    
+    const onMouseMove = (moveEvent) => {
+      const newWidth = Math.max(100, startWidth + (moveEvent.pageX - startX));
+      setColWidths(prev => ({ ...prev, [col]: newWidth }));
+    };
+    
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+    
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   const showToast = (msg) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setToastMessage(msg);
@@ -220,12 +242,20 @@ export default function AdminProducts() {
     if (drafts[prod.id]) {
       return {
         price: drafts[prod.id].price !== undefined ? drafts[prod.id].price : prod.price,
+        originalPrice: drafts[prod.id].originalPrice !== undefined ? drafts[prod.id].originalPrice : prod.originalPrice,
+        badge: drafts[prod.id].badge !== undefined ? drafts[prod.id].badge : prod.badge,
+        name: drafts[prod.id].name !== undefined ? drafts[prod.id].name : prod.name,
+        category: drafts[prod.id].category !== undefined ? drafts[prod.id].category : prod.category,
         stock: drafts[prod.id].stock !== undefined ? drafts[prod.id].stock : defaultStock,
         stockStatus: drafts[prod.id].stockStatus || defaultStatus
       };
     }
     return {
       price: prod.price,
+      originalPrice: prod.originalPrice,
+      badge: prod.badge,
+      name: prod.name,
+      category: prod.category,
       stock: defaultStock,
       stockStatus: defaultStatus
     };
@@ -238,13 +268,25 @@ export default function AdminProducts() {
 
     const origStock = prod.stock !== undefined ? prod.stock : 0;
     const origPrice = Number(prod.price);
+    const origOriginalPrice = Number(prod.originalPrice || 0);
+    const origBadge = prod.badge || '';
+    const origName = prod.name || '';
+    const origCategory = prod.category || '';
     const origStatus = prod.stockStatus || (origStock === 0 ? 'out_of_stock' : origStock <= 25 ? 'low_stock' : 'in_stock');
 
     const draftPrice = draft.price === '' ? origPrice : Number(draft.price);
+    const draftOriginalPrice = draft.originalPrice === '' ? origOriginalPrice : Number(draft.originalPrice);
+    const draftBadge = draft.badge === undefined ? origBadge : draft.badge;
+    const draftName = draft.name === undefined ? origName : draft.name;
+    const draftCategory = draft.category === undefined ? origCategory : draft.category;
     const draftStock = draft.stock === '' ? origStock : Number(draft.stock);
 
     return (
       (draft.price !== undefined && draftPrice !== origPrice) ||
+      (draft.originalPrice !== undefined && draftOriginalPrice !== origOriginalPrice) ||
+      (draft.badge !== undefined && draftBadge !== origBadge) ||
+      (draft.name !== undefined && draftName !== origName) ||
+      (draft.category !== undefined && draftCategory !== origCategory) ||
       (draft.stock !== undefined && draftStock !== Number(origStock)) ||
       (draft.stockStatus !== undefined && draft.stockStatus !== origStatus)
     );
@@ -260,6 +302,49 @@ export default function AdminProducts() {
           ...current,
           price: val
         }
+      };
+    });
+  };
+
+  const handleOriginalPriceChange = (prod, val) => {
+    setDrafts(prev => {
+      const current = getProductDraft(prod);
+      return {
+        ...prev,
+        [prod.id]: {
+          ...current,
+          originalPrice: val
+        }
+      };
+    });
+  };
+
+  const handleBadgeChange = (prod, val) => {
+    setDrafts(prev => {
+      const current = getProductDraft(prod);
+      return {
+        ...prev,
+        [prod.id]: { ...current, badge: val }
+      };
+    });
+  };
+
+  const handleNameChange = (prod, val) => {
+    setDrafts(prev => {
+      const current = getProductDraft(prod);
+      return {
+        ...prev,
+        [prod.id]: { ...current, name: val }
+      };
+    });
+  };
+
+  const handleCategoryChange = (prod, val) => {
+    setDrafts(prev => {
+      const current = getProductDraft(prod);
+      return {
+        ...prev,
+        [prod.id]: { ...current, category: val }
       };
     });
   };
@@ -324,7 +409,7 @@ export default function AdminProducts() {
       return next;
     });
 
-    showToast(`Saved changes for "${targetProd?.name || 'Product'}"! Live store updated.`);
+    showToast('Saved successfully');
   };
 
   // Discard draft for a single product
@@ -356,7 +441,7 @@ export default function AdminProducts() {
 
     saveProductChanges(payload);
     setDrafts({});
-    showToast(`Successfully saved updates for ${modifiedProductIds.length} product(s)! Live store updated.`);
+    showToast('Saved successfully');
   };
 
   // Discard all uncommitted changes
@@ -465,10 +550,12 @@ export default function AdminProducts() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300 pointer-events-none">
-          <div className="flex items-center space-x-1.5 text-sm font-semibold text-emerald-700 tracking-tight">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-            <span>{toastMessage}</span>
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none px-4 w-full max-w-sm sm:max-w-md">
+          <div className="flex items-center space-x-3 bg-white border border-emerald-200 px-4 py-3 rounded-2xl shadow-[0_10px_40px_-10px_rgba(16,185,129,0.3)] mx-auto">
+            <div className="w-8 h-8 rounded-full bg-emerald-100 flex flex-shrink-0 items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            </div>
+            <span className="text-sm font-bold text-stone-800 tracking-tight leading-snug">{toastMessage}</span>
           </div>
         </div>
       )}
@@ -698,23 +785,57 @@ export default function AdminProducts() {
       </div>
 
       {/* Products Table */}
-      <div className="bg-white rounded-3xl border border-stone-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white border border-stone-300 shadow-xs overflow-hidden rounded-none">
         <div className="w-full overflow-x-auto">
-          <table className="w-full text-left text-sm text-stone-600 min-w-[800px]">
-            <thead className="bg-stone-50 text-[11px] uppercase font-bold text-stone-500 border-b border-stone-200">
-              <tr>
-                <th className="px-4 py-4 text-center w-12 text-stone-400 font-black">#</th>
-                <th className="px-6 py-4">Product Info</th>
-                <th className="px-6 py-4">Price</th>
-                <th className="px-6 py-4">Quantity (Pcs)</th>
-                <th className="px-6 py-4">Stock Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+          <table className="w-full text-left text-sm text-stone-700 min-w-[800px] border-collapse border border-stone-300 rounded-none">
+            <thead className="bg-stone-50 text-[11px] uppercase font-bold text-stone-600 border-b border-stone-300">
+              <tr className="divide-x divide-stone-300">
+                <th className="px-4 py-4 text-center w-12 font-black border-r border-stone-300">#</th>
+                <th className="relative p-0 align-top group" style={{ width: colWidths.info }}>
+                  <div className="px-6 py-4 flex items-center justify-between">
+                    <span className="font-bold">Product Info</span>
+                  </div>
+                  {/* Resizer Handle */}
+                  <div 
+                    onMouseDown={(e) => startResize(e, 'info')}
+                    className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-emerald-500/50 transition-colors z-10"
+                    title="Drag to resize"
+                  />
+                </th>
+                <th className="relative p-0 align-top group" style={{ width: colWidths.price }}>
+                  <div className="px-6 py-4">
+                    <span className="font-bold">Price</span>
+                  </div>
+                  <div 
+                    onMouseDown={(e) => startResize(e, 'price')}
+                    className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-emerald-500/50 transition-colors z-10"
+                  />
+                </th>
+                <th className="relative p-0 align-top group" style={{ width: colWidths.qty }}>
+                  <div className="px-6 py-4">
+                    <span className="font-bold">Quantity (Pcs)</span>
+                  </div>
+                  <div 
+                    onMouseDown={(e) => startResize(e, 'qty')}
+                    className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-emerald-500/50 transition-colors z-10"
+                  />
+                </th>
+                <th className="relative p-0 align-top group" style={{ width: colWidths.status }}>
+                  <div className="px-6 py-4">
+                    <span className="font-bold">Stock Status</span>
+                  </div>
+                  <div 
+                    onMouseDown={(e) => startResize(e, 'status')}
+                    className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-emerald-500/50 transition-colors z-10"
+                  />
+                </th>
+                <th className="px-6 py-4 text-right font-bold">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-stone-300">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="p-12 text-center text-stone-400">
+                  <td colSpan="6" className="p-12 text-center text-stone-500 border border-stone-300 font-bold">
                     <Package className="w-10 h-10 mx-auto text-stone-300 mb-2" />
                     No products found matching criteria.
                   </td>
@@ -727,66 +848,114 @@ export default function AdminProducts() {
                   return (
                     <tr
                       key={prod.id}
-                      className={`transition-colors ${
-                        modified ? 'bg-amber-50/40 hover:bg-amber-50/70 border-l-4 border-l-amber-500' : 'hover:bg-stone-50/70'
+                      className={`transition-colors divide-x divide-stone-300 ${
+                        modified ? 'bg-amber-50/40 hover:bg-amber-50/70' : 'hover:bg-stone-50/70'
                       }`}
                     >
                       {/* Sequential Product # */}
                       <td className="px-4 py-4 text-center whitespace-nowrap">
-                        <span className="inline-flex w-7 h-7 rounded-xl bg-stone-100 items-center justify-center text-xs font-black text-stone-600 border border-stone-200/80">
+                        <span className="inline-flex w-7 h-7 rounded-xl bg-stone-100 items-center justify-center text-xs font-black text-stone-500 border border-stone-300">
                           {index + 1}
                         </span>
                       </td>
 
                       {/* Product Info */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
+                      <td className="px-6 py-4" style={{ minWidth: colWidths.info }}>
+                        <div className="flex items-start space-x-3">
                           <img
                             src={prod.image}
                             alt={prod.name}
                             className="w-12 h-12 object-cover rounded-xl border border-stone-200 flex-shrink-0"
                           />
-                          <div className="max-w-xs sm:max-w-sm">
+                          <div className="max-w-xs sm:max-w-sm flex flex-col space-y-2">
                             <div className="flex items-center space-x-2">
-                              <span className="font-bold text-stone-900 block truncate">
-                                {prod.name}
-                              </span>
+                              <input
+                                type="text"
+                                value={draft.name || ''}
+                                onChange={(e) => handleNameChange(prod, e.target.value)}
+                                className={`font-bold block w-full whitespace-normal break-words rounded py-1 px-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all ${
+                                  modified && draft.name !== prod.name
+                                    ? 'bg-amber-50 text-stone-900 border border-amber-300'
+                                    : 'bg-transparent hover:bg-stone-50 border border-transparent hover:border-stone-200 text-stone-900'
+                                }`}
+                                title="Edit product name"
+                              />
                               {modified && (
                                 <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 flex-shrink-0">
                                   Unsaved
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-stone-500 mt-0.5 block">
-                              <span className="font-medium text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded mr-1.5">{prod.category}</span>
-                              ID: {prod.id}
-                            </span>
+                            <div className="flex items-center space-x-2 text-[11px] text-stone-500">
+                              <input
+                                type="text"
+                                value={draft.category || ''}
+                                onChange={(e) => handleCategoryChange(prod, e.target.value)}
+                                className={`font-medium w-24 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all ${
+                                  modified && draft.category !== prod.category
+                                    ? 'bg-amber-50 text-emerald-800 border border-amber-300'
+                                    : 'bg-emerald-50 text-emerald-800 border border-transparent hover:border-emerald-200'
+                                }`}
+                                title="Edit product category"
+                              />
+                              <span>ID: {prod.id}</span>
+                            </div>
+                            <div className="mt-2 flex items-center space-x-2">
+                              <span className="text-[10px] font-bold text-stone-400">BADGE:</span>
+                              <input
+                                type="text"
+                                placeholder="e.g. TRENDING"
+                                value={draft.badge || ''}
+                                onChange={(e) => handleBadgeChange(prod, e.target.value)}
+                                className={`w-full max-w-[140px] rounded-md py-1 px-2 text-[10px] font-bold uppercase transition-all focus:outline-none focus:ring-1 focus:ring-amber-400 ${
+                                  modified && draft.badge !== (prod.badge || '')
+                                    ? 'bg-amber-50 border border-amber-400 text-stone-900'
+                                    : 'bg-stone-50 border border-stone-200 text-stone-600 focus:bg-white'
+                                }`}
+                              />
+                            </div>
                           </div>
                         </div>
                       </td>
 
                       {/* Price input (No auto-save) */}
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-1">
-                          <span className="text-xs font-bold text-stone-400">₹</span>
-                          <input
-                            type="number"
-                            min="0"
-                            value={draft.price}
-                            onChange={(e) => handlePriceChange(prod, e.target.value)}
-                            className={`w-20 rounded-lg py-1 px-2 text-xs font-black text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/20 transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
-                              modified && draft.price !== prod.price
-                                ? 'bg-white border-2 border-amber-500 ring-2 ring-amber-200'
-                                : 'bg-stone-50 hover:bg-white focus:bg-white border border-stone-300 focus:border-[#1B4D3E]'
-                            }`}
-                            title="Edit price (click Save button to apply)"
-                          />
-                        </div>
-                        {prod.originalPrice && (
-                          <div className="text-[10px] text-stone-400 line-through mt-0.5 pl-3">
-                            MRP: ₹{prod.originalPrice}
+                        <div className="flex flex-col space-y-1.5">
+                          <div className="flex items-center space-x-1">
+                            <span className="text-[10px] font-bold text-stone-400 w-8">SALE</span>
+                            <span className="text-xs font-bold text-emerald-600">₹</span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={draft.price}
+                              onChange={(e) => handlePriceChange(prod, e.target.value)}
+                              className={`w-20 rounded-lg py-1 px-2 text-xs font-black focus:outline-none focus:ring-2 focus:ring-[#1B4D3E]/20 transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                                modified && draft.price !== prod.price
+                                  ? 'bg-white border-2 border-amber-500 ring-2 ring-amber-200 text-stone-900'
+                                  : 'bg-emerald-50 hover:bg-emerald-100/50 focus:bg-white border border-emerald-200 focus:border-emerald-500 text-emerald-900'
+                              }`}
+                              title="Edit sale price (click Save button to apply)"
+                            />
                           </div>
-                        )}
+                          
+                          <div className="flex items-center space-x-1">
+                            <span className="text-[10px] font-bold text-stone-400 w-8 line-through">MRP</span>
+                            <span className="text-xs font-bold text-stone-400 line-through">₹</span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={draft.originalPrice || ''}
+                              onChange={(e) => handleOriginalPriceChange(prod, e.target.value)}
+                              placeholder="0"
+                              className={`w-20 rounded-lg py-1 px-2 text-xs font-bold text-stone-500 line-through focus:no-underline focus:text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400/20 transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                                modified && draft.originalPrice !== prod.originalPrice
+                                  ? 'bg-white border-2 border-amber-500 ring-2 ring-amber-200'
+                                  : 'bg-stone-50 hover:bg-white focus:bg-white border border-stone-200 focus:border-stone-400'
+                              }`}
+                              title="Edit original MRP price (crossed out)"
+                            />
+                          </div>
+                        </div>
                       </td>
 
                       {/* Quantity input & buttons (No auto-save) */}

@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 export default function TradeShowPopup() {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
+    if (location.pathname !== '/') return;
+    
     // Show popup smoothly after slight delay on initial website load
     const timer = setTimeout(() => {
       setIsOpen(true);
     }, 250);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [location.pathname]);
 
   // Handle ESC key to dismiss
   useEffect(() => {

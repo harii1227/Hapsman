@@ -33,14 +33,21 @@ export default function ProductCard({ product, onQuickView }) {
       {/* Top Image Container - 100% Full Width, Flush Edges */}
       <div className="relative aspect-[4/3] bg-[#FAF7F2] overflow-hidden w-full">
         
-        {/* Badge (Top Left) */}
-        {product.badge && (
-          <div className="absolute top-3 left-3 z-10">
+        {/* Badge / Low Stock Alert (Top Left) */}
+        <div className="absolute top-3 left-3 z-10 flex flex-col items-start gap-2 max-w-[85%]">
+          {product.stockStatus === 'low_stock' ? (
+            <div className="flex items-center space-x-1.5 bg-orange-500 px-2.5 py-1 rounded-lg shadow-md border border-orange-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse flex-shrink-0"></span>
+              <span className="text-[9px] font-black text-white uppercase tracking-wider leading-none mt-0.5">
+                Almost Sold Out
+              </span>
+            </div>
+          ) : product.badge ? (
             <span className="inline-block px-2.5 py-1 text-[10px] font-black uppercase tracking-wider bg-amber-400 text-stone-950 rounded-lg shadow-md border border-amber-300">
               {product.badge}
             </span>
-          </div>
-        )}
+          ) : null}
+        </div>
 
         {/* Wishlist Button */}
         <button
@@ -75,11 +82,17 @@ export default function ProductCard({ product, onQuickView }) {
             className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-none ${product.stockStatus === 'out_of_stock' ? 'grayscale opacity-60' : ''}`}
           />
           {product.stockStatus === 'out_of_stock' && (
-            <div className="absolute inset-0 bg-stone-900/20 flex flex-col items-center justify-end pb-6">
-              <span className="bg-rose-600 text-white font-bold text-[11px] uppercase tracking-wider py-1.5 px-4 rounded-full shadow-lg border border-rose-500/50">
-                Out of Stock
-              </span>
-            </div>
+            <>
+              {/* Dimmed effect over the image */}
+              <div className="absolute inset-0 bg-stone-900/10 backdrop-blur-[1px] pointer-events-none z-20" />
+              
+              {/* Diagonal Ribbon in Top-Right Corner */}
+              <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden z-30 pointer-events-none">
+                <div className="absolute top-4 -right-7 w-36 bg-red-600 text-white font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-center py-1.5 rotate-45 shadow-lg">
+                  Sold Out
+                </div>
+              </div>
+            </>
           )}
         </Link>
       </div>
@@ -123,70 +136,72 @@ export default function ProductCard({ product, onQuickView }) {
         </div>
 
         {/* Pricing & Add to Cart */}
-        <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
-          <div className="flex flex-col">
-            <div className="flex items-baseline space-x-1.5">
-              <span className="text-base sm:text-lg font-extrabold text-[#1B4D3E]">
-                ₹{product.price}
-              </span>
-              {product.originalPrice && (
-                <span className="text-xs text-stone-400 line-through">
-                  ₹{product.originalPrice}
+        <div className="mt-4 pt-3 border-t border-stone-100 flex flex-col">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col">
+              <div className="flex items-baseline space-x-1.5">
+                <span className="text-base sm:text-lg font-extrabold text-[#1B4D3E]">
+                  ₹{product.price}
+                </span>
+                {product.originalPrice && (
+                  <span className="text-xs text-stone-400 line-through">
+                    ₹{product.originalPrice}
+                  </span>
+                )}
+              </div>
+              {product.discount && (
+                <span className="text-[10px] font-bold text-emerald-700">
+                  Save {product.discount}
                 </span>
               )}
             </div>
-            {product.discount && (
-              <span className="text-[10px] font-bold text-emerald-700">
-                Save {product.discount}
-              </span>
+
+            {product.stockStatus === 'out_of_stock' ? (
+              <button
+                disabled
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-stone-200 text-stone-400 cursor-not-allowed shadow-sm border border-stone-200"
+              >
+                Out of Stock
+              </button>
+            ) : cartItem ? (
+              <div className="flex items-center space-x-1 bg-[#1B4D3E] rounded-full p-1 shadow-md border border-[#143D31]" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <button 
+                  onClick={() => decreaseQuantity(product.id)}
+                  className="w-7 h-7 flex items-center justify-center rounded-full bg-[#143D31] text-amber-200 hover:bg-[#0a201a] transition-colors"
+                >
+                  <Minus className="w-3.5 h-3.5" strokeWidth={3} />
+                </button>
+                <span className="text-sm font-bold text-white w-5 text-center leading-none">{cartItem.quantity}</span>
+                <button 
+                  onClick={() => increaseQuantity(product.id)}
+                  className="w-7 h-7 flex items-center justify-center rounded-full bg-amber-400 text-[#1B4D3E] hover:bg-amber-300 transition-colors shadow-sm"
+                >
+                  <Plus className="w-3.5 h-3.5" strokeWidth={3} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-sm ${
+                  isAdded
+                    ? 'bg-emerald-700 text-white'
+                    : 'bg-[#1B4D3E] text-amber-200 hover:bg-[#0F2C23] hover:shadow-md'
+                }`}
+              >
+                {isAdded ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Added</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>Add to Cart</span>
+                  </>
+                )}
+              </button>
             )}
           </div>
-
-          {product.stockStatus === 'out_of_stock' ? (
-            <button
-              disabled
-              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-stone-200 text-stone-400 cursor-not-allowed shadow-sm border border-stone-200"
-            >
-              Out of Stock
-            </button>
-          ) : cartItem ? (
-            <div className="flex items-center space-x-1 bg-[#1B4D3E] rounded-full p-1 shadow-md border border-[#143D31]" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-              <button 
-                onClick={() => decreaseQuantity(product.id)}
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-[#143D31] text-amber-200 hover:bg-[#0a201a] transition-colors"
-              >
-                <Minus className="w-3.5 h-3.5" strokeWidth={3} />
-              </button>
-              <span className="text-sm font-bold text-white w-5 text-center leading-none">{cartItem.quantity}</span>
-              <button 
-                onClick={() => increaseQuantity(product.id)}
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-amber-400 text-[#1B4D3E] hover:bg-amber-300 transition-colors shadow-sm"
-              >
-                <Plus className="w-3.5 h-3.5" strokeWidth={3} />
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={handleAddToCart}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 shadow-sm ${
-                isAdded
-                  ? 'bg-emerald-700 text-white'
-                  : 'bg-[#1B4D3E] text-amber-200 hover:bg-[#0F2C23] hover:shadow-md'
-              }`}
-            >
-              {isAdded ? (
-                <>
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Added</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  <span>Add to Cart</span>
-                </>
-              )}
-            </button>
-          )}
         </div>
       </div>
     </div>
