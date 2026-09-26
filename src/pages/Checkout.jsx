@@ -22,7 +22,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAddresses } from '../hooks/useAddresses';
 
 export default function Checkout() {
-  const { cartItems, getSubtotal, getDiscountAmount, getShippingFee, getTotal, clearCart } = useCart();
+  const { cartItems, getSubtotal, getDiscountAmount, getShippingFee, getTotal, clearCart, appliedCoupon } = useCart();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addresses, count, maxLimit, canAddMore, addAddress } = useAddresses();
