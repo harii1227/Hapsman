@@ -14,7 +14,7 @@ import {
   Check
 } from 'lucide-react';
 
-function OrderStatusDropdown({ value, onChange, disabled = false }) {
+function OrderStatusDropdown({ value, onChange, disabled = false, openUp = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -34,7 +34,6 @@ function OrderStatusDropdown({ value, onChange, disabled = false }) {
 
   const options = [
     { value: 'Pending', label: 'Pending', dotColor: 'bg-amber-500', style: 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100' },
-    { value: 'Processing', label: 'Processing', dotColor: 'bg-blue-500', style: 'bg-blue-50 text-blue-800 border-blue-300 hover:bg-blue-100' },
     { value: 'Shipped', label: 'Shipped', dotColor: 'bg-purple-500', style: 'bg-purple-50 text-purple-800 border-purple-300 hover:bg-purple-100' },
     { value: 'Delivered', label: 'Delivered', dotColor: 'bg-emerald-500', style: 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100' },
     { value: 'Cancelled', label: 'Cancelled', dotColor: 'bg-rose-500', style: 'bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100' }
@@ -56,7 +55,7 @@ function OrderStatusDropdown({ value, onChange, disabled = false }) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1.5 w-44 rounded-2xl bg-white p-1.5 shadow-2xl border border-stone-200 z-50 animate-in fade-in zoom-in-95">
+        <div className={`absolute right-0 w-44 rounded-2xl bg-white p-1.5 shadow-2xl border border-stone-200 z-[999] animate-in fade-in zoom-in-95 ${openUp ? 'bottom-full mb-1.5' : 'top-full mt-1.5'}`}>
           {options.map((opt) => {
             const isSelected = opt.value === value;
             return (
@@ -109,11 +108,10 @@ export default function AdminOrders() {
     }
   }, [searchParams, orders]);
 
-  const statuses = ['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+  const statuses = ['All', 'Pending', 'Shipped', 'Delivered', 'Cancelled'];
 
   const statusColors = {
     Pending: 'bg-amber-100 text-amber-800 border-amber-300',
-    Processing: 'bg-blue-100 text-blue-800 border-blue-300',
     Shipped: 'bg-purple-100 text-purple-800 border-purple-300',
     Delivered: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     Cancelled: 'bg-red-100 text-red-800 border-red-300'
@@ -206,7 +204,7 @@ export default function AdminOrders() {
 
       {/* Orders Table */}
       <div className="bg-white rounded-3xl border border-stone-200/80 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto min-h-[380px]">
           <table className="w-full text-left text-sm text-stone-600">
             <thead className="bg-stone-50 text-[11px] uppercase font-bold text-stone-500 border-b border-stone-200">
               <tr>
@@ -228,7 +226,7 @@ export default function AdminOrders() {
                   </td>
                 </tr>
               ) : (
-                filteredOrders.map(order => (
+                filteredOrders.map((order, idx) => (
                   <tr key={order.id} className="hover:bg-stone-50/70 transition-colors">
                     <td className="px-6 py-4">
                       <span className="font-mono font-bold text-stone-900 block">
@@ -266,6 +264,7 @@ export default function AdminOrders() {
                       <OrderStatusDropdown
                         value={order.status}
                         onChange={(newStatus) => handleStatusChange(order.id, newStatus)}
+                        openUp={filteredOrders.length > 3 && idx >= filteredOrders.length - 2}
                       />
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">

@@ -220,23 +220,45 @@ export default function AdminCustomers() {
                   customerOrders.map((ord) => (
                     <div
                       key={ord.id}
-                      className="p-4 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-4 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col gap-3"
                     >
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <span className="font-mono font-bold text-stone-900 text-xs">
-                            {ord.id}
-                          </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white border border-stone-200 text-stone-700">
-                            {ord.status}
-                          </span>
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-mono font-bold text-stone-900 text-xs">
+                              {ord.id}
+                            </span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white border border-stone-200 text-stone-700">
+                              {ord.status}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-stone-500 mt-1">
+                            Date: {new Date(ord.created_at).toLocaleDateString('en-IN', {
+                              day: 'numeric', month: 'short', year: 'numeric'
+                            })} • Mode: {ord.payment_method}
+                          </p>
                         </div>
-                        <p className="text-[11px] text-stone-500 mt-1">
-                          Date: {new Date(ord.created_at).toLocaleDateString('en-IN')} • Mode: {ord.payment_method}
-                        </p>
+                        <div className="text-left sm:text-right font-black text-stone-900 text-sm">
+                          ₹{Number(ord.total_amount).toLocaleString('en-IN')}
+                        </div>
                       </div>
-                      <div className="text-right font-black text-stone-900 text-sm">
-                        ₹{Number(ord.total_amount).toLocaleString('en-IN')}
+                      
+                      {/* Order-specific shipping info */}
+                      <div className="mt-1 pt-3 border-t border-stone-200/60 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                           <p className="text-[9px] font-bold uppercase tracking-wider text-stone-400 mb-1">Order Contact</p>
+                           <p className="text-xs text-stone-800 font-bold">{ord.shipping_name}</p>
+                           <p className="text-[11px] text-stone-500 mt-0.5 flex items-center">
+                             <Phone className="w-3 h-3 mr-1" /> {ord.shipping_phone}
+                           </p>
+                        </div>
+                        <div>
+                           <p className="text-[9px] font-bold uppercase tracking-wider text-stone-400 mb-1">Delivered To</p>
+                           <p className="text-[11px] text-stone-600 leading-snug font-medium">
+                             {ord.shipping_address}<br/>
+                             {ord.shipping_city}, {ord.shipping_state} - {ord.shipping_pincode}
+                           </p>
+                        </div>
                       </div>
                     </div>
                   ))

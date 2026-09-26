@@ -174,6 +174,35 @@ export function AdminProvider({ children }) {
       setOrders(prev =>
         prev.map(ord => (ord.id === orderId ? { ...ord, status: newStatus } : ord))
       );
+
+      // Trigger automatic email update to customer
+      const targetOrder = orders.find(o => o.id === orderId);
+      if (targetOrder) {
+        const userProfile = profiles.find(p => p.id === targetOrder.user_id);
+        const customerEmail = userProfile?.email || targetOrder.user_email;
+        
+        if (customerEmail) {
+          fetch('/api/send-status-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: orderId,
+              status: newStatus,
+              customer: {
+                name: targetOrder.shipping_name || 'Customer',
+                email: customerEmail,
+                phone: targetOrder.shipping_phone || '',
+                address: targetOrder.shipping_address || '',
+                city: targetOrder.shipping_city || '',
+                state: targetOrder.shipping_state || '',
+                pincode: targetOrder.shipping_pincode || ''
+              },
+              origin: window.location.origin
+            })
+          }).catch(err => console.error('Failed to trigger status email API:', err));
+        }
+      }
+
       return { success: true };
     } catch (err) {
       console.error('Failed to update status:', err);
@@ -509,7 +538,6 @@ export function AdminProvider({ children }) {
     const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(o => o.status === 'Pending').length;
-    const processingOrders = orders.filter(o => o.status === 'Processing').length;
     const shippedOrders = orders.filter(o => o.status === 'Shipped').length;
     const deliveredOrders = orders.filter(o => o.status === 'Delivered').length;
     const cancelledOrders = orders.filter(o => o.status === 'Cancelled').length;
@@ -519,7 +547,6 @@ export function AdminProvider({ children }) {
       totalRevenue,
       totalOrders,
       pendingOrders,
-      processingOrders,
       shippedOrders,
       deliveredOrders,
       cancelledOrders,

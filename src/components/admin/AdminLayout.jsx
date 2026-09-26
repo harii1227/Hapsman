@@ -161,7 +161,7 @@ export default function AdminLayout() {
           </div>
 
           {/* Top Right Header Controls */}
-          <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <button
               onClick={refreshOrders}
               disabled={loadingOrders}
@@ -171,13 +171,22 @@ export default function AdminLayout() {
               <RefreshCw className={`w-5 h-5 ${loadingOrders ? 'animate-spin text-emerald-600' : ''}`} />
             </button>
 
+            {/* Mobile quick logout */}
+            <button
+              onClick={adminLogout}
+              className="lg:hidden p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all"
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+
             <div className="h-8 w-px bg-stone-200 hidden sm:block" />
 
-            <div className="flex items-center space-x-3">
+            <div className="hidden lg:flex items-center space-x-3">
               <div className="w-9 h-9 rounded-xl bg-[#1B4D3E] text-amber-300 flex items-center justify-center font-bold text-sm shadow-xs border border-emerald-800/40">
                 <ShieldCheck className="w-4 h-4" />
               </div>
-              <div className="hidden md:block text-left text-xs">
+              <div className="text-left text-xs">
                 <span className="font-bold text-stone-900 block">Master Administrator</span>
                 <span className="text-emerald-700 text-[11px] font-semibold flex items-center space-x-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />

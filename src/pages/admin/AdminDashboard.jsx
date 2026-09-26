@@ -21,7 +21,6 @@ export default function AdminDashboard() {
 
   const statusColors = {
     Pending: 'bg-amber-100 text-amber-800 border-amber-200',
-    Processing: 'bg-blue-100 text-blue-800 border-blue-200',
     Shipped: 'bg-purple-100 text-purple-800 border-purple-200',
     Delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     Cancelled: 'bg-red-100 text-red-800 border-red-200'
@@ -108,7 +107,7 @@ export default function AdminDashboard() {
           </div>
           <div className="mt-4">
             <span className="text-3xl font-black text-amber-600">
-              {stats.pendingOrders + stats.processingOrders}
+              {stats.pendingOrders}
             </span>
             <div className="text-xs text-stone-500 font-medium mt-1.5">
               Needs packing & dispatch
@@ -142,7 +141,7 @@ export default function AdminDashboard() {
         <h3 className="text-sm font-bold uppercase tracking-wider text-stone-600 mb-4">
           Order Pipeline Status
         </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Link
             to="/arhadmin/orders?status=Pending"
             className="p-4 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors flex flex-col justify-between"
@@ -154,16 +153,7 @@ export default function AdminDashboard() {
             <span className="text-2xl font-black text-amber-900 mt-2">{stats.pendingOrders}</span>
           </Link>
 
-          <Link
-            to="/arhadmin/orders?status=Processing"
-            className="p-4 rounded-xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors flex flex-col justify-between"
-          >
-            <div className="flex items-center justify-between text-blue-700 text-xs font-bold">
-              <span>Processing</span>
-              <PackageCheck className="w-4 h-4" />
-            </div>
-            <span className="text-2xl font-black text-blue-900 mt-2">{stats.processingOrders}</span>
-          </Link>
+
 
           <Link
             to="/arhadmin/orders?status=Shipped"
