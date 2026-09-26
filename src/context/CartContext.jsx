@@ -33,18 +33,36 @@ export const CartProvider = ({ children }) => {
   };
 
   const addItem = (product, quantity = 1) => {
+    let limitReached = false;
     setCartItems(prevItems => {
       const existingIndex = prevItems.findIndex(item => item.id === product.id);
+      const stockLimit = product.stockQuantity ?? Infinity;
+      
       if (existingIndex > -1) {
         const updated = [...prevItems];
-        updated[existingIndex].quantity += quantity;
+        const newQty = updated[existingIndex].quantity + quantity;
+        if (newQty > stockLimit) {
+          limitReached = true;
+          updated[existingIndex].quantity = stockLimit;
+        } else {
+          updated[existingIndex].quantity = newQty;
+        }
         return updated;
       } else {
+        if (quantity > stockLimit) {
+          limitReached = true;
+          return [...prevItems, { ...product, quantity: stockLimit }];
+        }
         return [...prevItems, { ...product, quantity }];
       }
     });
-    showToast(`Added "${product.name}" to your cart!`);
-    setIsCartOpen(true);
+    
+    if (limitReached) {
+      showToast(`Cannot add more than available stock (${product.stockQuantity || 0})`);
+    } else {
+      showToast(`Added "${product.name}" to your cart!`);
+      setIsCartOpen(true);
+    }
   };
 
   const removeItem = (productId) => {
@@ -52,11 +70,23 @@ export const CartProvider = ({ children }) => {
   };
 
   const increaseQuantity = (productId) => {
+    let limitReached = false;
     setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
-      )
+      prevItems.map(item => {
+        if (item.id === productId) {
+          const stockLimit = item.stockQuantity ?? Infinity;
+          if (item.quantity + 1 > stockLimit) {
+            limitReached = true;
+            return item;
+          }
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      })
     );
+    if (limitReached) {
+      showToast('Maximum available stock reached');
+    }
   };
 
   const decreaseQuantity = (productId) => {

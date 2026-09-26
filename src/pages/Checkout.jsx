@@ -172,6 +172,28 @@ export default function Checkout() {
         const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);
         if (itemsError) throw itemsError;
         
+        // Deduct stock for each item
+        for (const item of cartItems) {
+          const productId = item.id?.toString();
+          if (productId) {
+            const { data: stockData } = await supabase
+              .from('product_stock')
+              .select('stock')
+              .eq('product_id', productId)
+              .single();
+              
+            if (stockData) {
+              const newStock = Math.max(0, (stockData.stock || 0) - item.quantity);
+              const newStatus = newStock === 0 ? 'out_of_stock' : newStock <= 25 ? 'low_stock' : 'in_stock';
+              
+              await supabase
+                .from('product_stock')
+                .update({ stock: newStock, stock_status: newStatus })
+                .eq('product_id', productId);
+            }
+          }
+        }
+        
       } catch (err) {
         console.error("Failed to save order to Supabase", err);
       }
