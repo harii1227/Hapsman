@@ -26,7 +26,7 @@ export default function AdminCoupons() {
   const [errorMsg, setErrorMsg] = useState('');
   const [couponToDelete, setCouponToDelete] = useState(null);
 
-  const handleCreateCoupon = (e) => {
+  const handleCreateCoupon = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
@@ -36,7 +36,7 @@ export default function AdminCoupons() {
       return;
     }
 
-    const res = createCoupon({
+    const res = await createCoupon({
       code,
       percentage,
       minOrder,
