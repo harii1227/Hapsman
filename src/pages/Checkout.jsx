@@ -295,6 +295,35 @@ export default function Checkout() {
     }
   };
 
+  if (!user) {
+    return (
+      <div className="bg-[#FAF7F2] py-16 min-h-screen flex items-center justify-center">
+        <div className="max-w-md w-full mx-auto px-4 text-center">
+          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-xl space-y-5">
+            <div className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto border border-amber-200">
+              <Lock className="w-8 h-8" />
+            </div>
+            
+            <h2 className="font-serif text-2xl font-extrabold text-stone-900">
+              Login Required
+            </h2>
+
+            <p className="text-sm text-stone-600 leading-relaxed">
+              Please login or create an account to securely place your order and track its status.
+            </p>
+
+            <button
+              onClick={() => navigate('/profile')}
+              className="w-full py-3.5 bg-[#1B4D3E] text-amber-200 rounded-xl font-bold text-sm hover:bg-[#0F2C23] transition-colors shadow-md cursor-pointer"
+            >
+              Login / Sign Up
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isOrderPlaced) {
     return (
       <div className="bg-[#FAF7F2] py-16 min-h-screen">

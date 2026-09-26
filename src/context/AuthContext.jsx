@@ -24,13 +24,14 @@ export function AuthProvider({ children }) {
     const syncUserProfile = async (u) => {
       if (!u) return;
       try {
-        await supabase.from('profiles').upsert({
+        const { error } = await supabase.from('profiles').upsert({
           id: u.id,
           email: u.email,
-          last_login: new Date().toISOString()
+          full_name: u.user_metadata?.full_name || 'Customer'
         }, { onConflict: 'id' });
-      } catch {
-        // Silently skip if table is not yet migrated
+        if (error) console.error('Error syncing profile:', error);
+      } catch (e) {
+        console.error('Exception syncing profile:', e);
       }
     };
 
